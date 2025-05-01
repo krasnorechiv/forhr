@@ -36,7 +36,13 @@ sonarqube-check-backend:
       - .sonar/cache
   script:
     - cd backend/
-    - sonar-scanner ${SONAR_PROJECT_KEY_BACK} ${SONARQUBE_DIR} ${SONARQUBE_URL} ${SONAR_LOGIN} -Dsonar.qualitygate.wait=true
+    - > 
+      sonar-scanner 
+      ${SONAR_PROJECT_KEY_BACK} 
+      ${SONARQUBE_DIR} 
+      ${SONARQUBE_URL} 
+      ${SONAR_LOGIN} 
+      -Dsonar.qualitygate.wait=true
   allow_failure: false
   rules:
     - if: $CI_COMMIT_REF_NAME == 'main' || $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -46,7 +52,6 @@ sonarqube-check-backend:
 upload-binary-pelmennaya:
   stage: release-binary
   script:
-    - ls backend/exe
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --upload-file backend/exe/${APP_NAME}
