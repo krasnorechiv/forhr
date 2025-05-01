@@ -58,4 +58,4 @@ upload-binary-pelmennaya:
       --upload-file ${APP_NAME}.tar.gz
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}/${APP_NAME}.tar.gz
   needs:
-    - sonarqube-check-backend
+    - sonarqube-check-frontend
