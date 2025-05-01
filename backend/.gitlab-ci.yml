@@ -20,5 +20,5 @@ build-backend-code-job:
     - cd backend/
     - go build -o $APP_NAME ./cmd/api
   artifacts:
-    path: 
+    paths: 
       - backend/$APP_NAME
