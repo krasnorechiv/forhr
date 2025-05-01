@@ -37,7 +37,7 @@ sonarqube-check-frontend:
   script:
     - cd frontend/
     - > 
-      sonar-scanner  
+      sonar-scanner -X   
       ${SONAR_PROJECT_KEY_FRONT} 
       ${SONARQUBE_DIR} 
       ${SONARQUBE_URL} 
