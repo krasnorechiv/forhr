@@ -10,18 +10,17 @@ variables:
 cache:
   paths:
     - .go/pkg/mod/
+    - backend/exe
 
 build-backend-code-job:
   stage: build
   image: golang:$GO_VERSION
   before_script:
     - export PATH="/usr/local/go/bin:$PATH"
-    - mkdir -p .go
+    - mkdir -p .go backend/exe
   script:
     - cd backend/
-    - go build -o $APP_NAME ./cmd/api
-    - ls
-    - ls ..
+    - go build -o exe/$APP_NAME ./cmd/api
 
 sonarqube-check-backend:
   stage: test
@@ -47,11 +46,10 @@ sonarqube-check-backend:
 upload-binary-pelmennaya:
   stage: release-binary
   script:
-    - cd backend/
-    - ls
+    - ls backend/exe
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
-      --upload-file ${APP_NAME}
+      --upload-file backend/exe/${APP_NAME}
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}/${APP_NAME}
   needs:
     - sonarqube-check-backend
