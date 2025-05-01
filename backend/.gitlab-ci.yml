@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
 variables:
   GO_VERSION: "${GO_VERSION}"
   APP_NAME: pelmennaya-backend-${VERSION}
@@ -24,6 +25,7 @@ build-backend-code-job:
       - backend/$APP_NAME
 
 sonarqube-check-backend:
+  stage: test
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
