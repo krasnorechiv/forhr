@@ -48,6 +48,7 @@ sonarqube-check-backend:
 upload-binary-pelmennaya:
   stage: release-binary
   script:
+    - cd backend/
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --upload-file ${APP_NAME}
