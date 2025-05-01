@@ -3,26 +3,26 @@ stages:
   - test
   - release-binary
 variables:
-  GO_VERSION: "${GO_VERSION}"
-  APP_NAME: pelmennaya-backend-${VERSION}
+  NODE_VERSION: "${NODE_VERSION}"
+  APP_NAME: pelmennaya-frontend-${VERSION}
   VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
-  GOPATH: "$CI_PROJECT_DIR/.go"
 cache:
   paths:
-    - .go/pkg/mod/  # передаю кеш в другие задачи
-    - backend/exe   # сюда будет скомпилирован бинарь
+    - frontend/dist/ # передаю кеш в другие задачи
 
-build-backend-code-job:
-  stage: build
-  image: golang:$GO_VERSION
-  before_script:
-    - export PATH="/usr/local/go/bin:$PATH"
-    - mkdir -p .go backend/exe  # создать директории для кеша go и для бинаря
+build-frontend-code-job:
+  stage: build  
+  image:
+    name: node:${NODE_VERSION}
+  variables:
+    NODE_OPTIONS: "--openssl-legacy-provider"
   script:
-    - cd backend/
-    - go build -o exe/$APP_NAME ./cmd/api
+    - cd frontend
+    - npm install
+    - npm run build
 
-sonarqube-check-backend:
+
+sonarqube-check-frontend:
   stage: test
   image:
     name: sonarsource/sonar-scanner-cli:latest
@@ -35,10 +35,10 @@ sonarqube-check-backend:
     paths:
       - .sonar/cache
   script:
-    - cd backend/
+    - cd frontend/
     - > 
       sonar-scanner 
-      ${SONAR_PROJECT_KEY_BACK} 
+      ${SONAR_PROJECT_KEY_FRONT} 
       ${SONARQUBE_DIR} 
       ${SONARQUBE_URL} 
       ${SONAR_LOGIN} 
@@ -47,14 +47,15 @@ sonarqube-check-backend:
   rules:
     - if: $CI_COMMIT_REF_NAME == 'main' || $CI_PIPELINE_SOURCE == 'merge_request_event'
   needs:
-    - build-backend-code-job  
+    - build-frontend-code-job  
 
 upload-binary-pelmennaya:
   stage: release-binary
   script:
+    - tar czvf ${APP_NAME}.tar.gz frontend/dist
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
-      --upload-file backend/exe/${APP_NAME}
-      ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}/${APP_NAME}
+      --upload-file ${APP_NAME}.tar.gz
+      ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}/${APP_NAME}.tar.gz
   needs:
     - sonarqube-check-backend
