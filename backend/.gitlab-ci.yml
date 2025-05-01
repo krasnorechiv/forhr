@@ -20,9 +20,6 @@ build-backend-code-job:
   script:
     - cd backend/
     - go build -o $APP_NAME ./cmd/api
-  artifacts:
-    paths: 
-      - backend/$APP_NAME
 
 sonarqube-check-backend:
   stage: test
@@ -49,6 +46,7 @@ upload-binary-pelmennaya:
   stage: release-binary
   script:
     - cd backend/
+    - ls
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --upload-file ${APP_NAME}
