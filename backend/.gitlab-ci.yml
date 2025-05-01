@@ -20,6 +20,8 @@ build-backend-code-job:
   script:
     - cd backend/
     - go build -o $APP_NAME ./cmd/api
+    - ls
+    - ls ..
 
 sonarqube-check-backend:
   stage: test
