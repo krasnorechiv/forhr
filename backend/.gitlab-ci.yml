@@ -9,14 +9,13 @@ variables:
 cache:
   paths:
     - .go/pkg/mod/
-before_script:
-  - export PATH="/usr/local/go/bin:$PATH"
-  - mkdir -p .go
-  - go version    
 
 build-backend-code-job:
   stage: build
   image: golang:$GO_VERSION
+  before_script:
+    - export PATH="/usr/local/go/bin:$PATH"
+    - mkdir -p .go
   script:
     - cd backend/
     - go build -o $APP_NAME ./cmd/api
