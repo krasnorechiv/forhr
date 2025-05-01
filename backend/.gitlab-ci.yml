@@ -1,0 +1,24 @@
+stages:
+  - build
+variables:
+  GO_VERSION: ${GO_VERSION}
+  APP_NAME: pelmennaya-backend-${VERSION}
+  VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
+  GOPATH: "$CI_PROJECT_DIR/.go"
+cache:
+  paths:
+    - .go/pkg/mod/
+before_script:
+  - export PATH="/usr/local/go/bin:$PATH"
+  - mkdir -p .go
+  - go version    
+
+build-backend-code-job:
+  stage: build
+  image: golang:$GO_VERSION
+  script:
+    - cd backend/
+    - go build -o $APP_NAME ./cmd/api
+  artifacts:
+    path: 
+      - backend/$APP_NAME
