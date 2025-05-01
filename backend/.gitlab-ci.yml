@@ -53,4 +53,4 @@ upload-binary-pelmennaya:
       --upload-file ${APP_NAME}
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}/${APP_NAME}
   needs:
-    - sonarqube-frontend-sast
+    - sonarqube-check-backend
