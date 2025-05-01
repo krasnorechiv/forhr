@@ -14,8 +14,8 @@ build-frontend-code-job:
   stage: build  
 #  image:
 #    name: node:${NODE_VERSION}
-  variables:
-    NODE_OPTIONS: "--openssl-legacy-provider"
+#  variables:
+#    NODE_OPTIONS: "--openssl-legacy-provider"
   script:
     - cd frontend
     - npm install
