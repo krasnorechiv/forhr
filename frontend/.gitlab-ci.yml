@@ -12,8 +12,8 @@ cache:
 
 build-frontend-code-job:
   stage: build  
-  image:
-    name: node:${NODE_VERSION}
+#  image:
+#    name: node:${NODE_VERSION}
   variables:
     NODE_OPTIONS: "--openssl-legacy-provider"
   script:
@@ -37,7 +37,7 @@ sonarqube-check-frontend:
   script:
     - cd frontend/
     - > 
-      sonar-scanner 
+      sonar-scanner  
       ${SONAR_PROJECT_KEY_FRONT} 
       ${SONARQUBE_DIR} 
       ${SONARQUBE_URL} 
