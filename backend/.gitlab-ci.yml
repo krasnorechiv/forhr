@@ -22,3 +22,21 @@ build-backend-code-job:
   artifacts:
     paths: 
       - backend/$APP_NAME
+
+sonarqube-check-backend:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd backend/
+    - sonar-scanner ${SONAR_PROJECT_KEY_BACK} ${SONARQUBE_DIR} ${SONARQUBE_URL} ${SONAR_LOGIN} -Dsonar.qualitygate.wait=true
+  allow_failure: false
+  rules:
+    - if: $CI_COMMIT_REF_NAME == 'main' || $CI_PIPELINE_SOURCE == 'merge_request_event'
