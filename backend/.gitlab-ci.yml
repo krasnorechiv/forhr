@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - release-binary
 variables:
   GO_VERSION: "${GO_VERSION}"
   APP_NAME: pelmennaya-backend-${VERSION}
@@ -41,3 +42,15 @@ sonarqube-check-backend:
   allow_failure: false
   rules:
     - if: $CI_COMMIT_REF_NAME == 'main' || $CI_PIPELINE_SOURCE == 'merge_request_event'
+  needs:
+    - build-backend-code-job  
+
+upload-binary-pelmennaya:
+  stage: release-binary
+  script:
+    - >
+      curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
+      --upload-file ${APP_NAME}
+      ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}/${APP_NAME}
+  needs:
+    - sonarqube-frontend-sast
