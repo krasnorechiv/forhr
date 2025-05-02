@@ -11,7 +11,7 @@ RUN apt update && apt install -y curl tar \
 FROM debian:bookworm
 WORKDIR /app/frontend
 RUN apt update && apt install -y nginx
-COPY ./nginx/default.conf /etc/nginx/sites-available/
+COPY ./nginx/default.conf /etc/nginx/sites-available/default
 COPY --from=builder --chown=www-data:www-data /usr/src/app/frontend/dist/ .
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
