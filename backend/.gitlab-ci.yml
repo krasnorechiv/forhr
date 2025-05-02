@@ -73,7 +73,7 @@ build-docker-backend-code-job:
       --context "${CI_PROJECT_DIR}/backend"
       --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}/${DOCKER_APP_NAME}"
-      --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}"
+      --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --build-arg "URL_TO_DOWNLOAD=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}"
       --build-arg "APP_NAME=${DOCKER_APP_NAME}-${VERSION}"
       --cache=true
