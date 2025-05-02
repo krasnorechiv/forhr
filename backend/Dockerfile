@@ -1,10 +1,14 @@
 FROM golang:1.24.2-bookworm as builder
+ARG VERSION=${VERSION} \
+    CRED_NEXUS=${CRED_NEXUS} \
+    URL_TO_DOWNLOAD=${URL_TO_DOWNLOAD} \
+    APP_NAME=${APP_NAME}
 WORKDIR /usr/app
-RUN echo "Building ${APP_NAME} ${VERSION} from ${URL} ${CRED_NEXUS}"
-
-RUN curl -O -u $CRED_NEXUS $URL/${APP_NAME} && chmod +x ${APP_NAME}
+RUN echo "Building ${APP_NAME} ${VERSION} from ${URL_TO_DOWNLOAD} ${CRED_NEXUS}"
+RUN curl -O -u $CRED_NEXUS $URL_TO_DOWNLOAD/${APP_NAME} && chmod +x ${APP_NAME}
 
 FROM golang:1.24.2-bookworm
+ARG APP_NAME=${APP_NAME}
 WORKDIR /app
 RUN addgroup --system gouser \
     && adduser --system --shell /bin/false --group gouser --disabled-login
