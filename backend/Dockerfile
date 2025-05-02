@@ -1,18 +1,10 @@
-ARG VERSION
-ARG CRED_NEXUS
-ARG URL
-ARG APP_NAME
-
 FROM golang:1.24.2-bookworm as builder
-ENV VERSION=${VERSION} 
-ENV APP_NAME=${APP_NAME}
 WORKDIR /usr/app
 RUN echo "Building ${APP_NAME} ${VERSION} from ${URL} ${CRED_NEXUS}"
 
 RUN curl -O -u $CRED_NEXUS $URL/${APP_NAME} && chmod +x ${APP_NAME}
 
 FROM golang:1.24.2-bookworm
-ENV APP_NAME=${APP_NAME}
 WORKDIR /app
 RUN addgroup --system gouser \
     && adduser --system --shell /bin/false --group gouser --disabled-login
