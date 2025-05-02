@@ -5,11 +5,12 @@ ARG APP_NAME
 
 FROM golang:1.24.2-bookworm as builder
 ENV VERSION=${VERSION} 
-ENV CRED_NEXUS=${CRED_NEXUS} 
-ENV URL=${URL}
 ENV APP_NAME=${APP_NAME}
 WORKDIR /usr/app
-RUN curl -O -u $CRED_NEXUS $URL/${APP_NAME} && chmod +x ${APP_NAME}
+RUN echo "Building ${APP_NAME} ${VERSION} from ${URL_TO_DOWNLOAD} $(cat /run/secrets/nexus_creds)"
+
+RUN --mount=type=secret,id=nexus_creds \ 
+    curl -O -u $CRED_NEXUS $URL/${APP_NAME} && chmod +x ${APP_NAME}
 
 FROM golang:1.24.2-bookworm
 ENV APP_NAME=${APP_NAME}
