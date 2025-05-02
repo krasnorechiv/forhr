@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim as builder
+FROM debian:bookworm as builder
 ARG CRED_NEXUS=${CRED_NEXUS} \
     URL_TO_DOWNLOAD=${URL_TO_DOWNLOAD} \
     APP_NAME=${APP_NAME}
