@@ -73,9 +73,9 @@ build-docker-backend-code-job:
       --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}"
       --build-arg VERSION=$VERSION
-      --build-arg CRED_NEXUS="${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
-      --build-arg URL=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}
-      --build-arg APP_NAME=${APP_NAME}
+      --build-arg CRED_NEXUS=$NEXUS_REPO_USER:$NEXUS_REPO_PASS
+      --build-arg URL=$NEXUS_REPO_URL/repository/$NEXUS_REPO_BACKEND_NAME/$VERSION
+      --build-arg APP_NAME=$APP_NAME
       --cache=true
   needs:
     - sonarqube-check-backend
@@ -91,6 +91,6 @@ release-backend-docker-image:
   before_script:
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - crane tag $CI_REGISTRY_IMAGE/${APP_NAME} $VERSION
+    - crane tag $CI_REGISTRY_IMAGE/$APP_NAME $VERSION
   needs:
     - build-docker-backend-code-job
