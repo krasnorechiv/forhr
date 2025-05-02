@@ -8,10 +8,8 @@ RUN apt update && apt install -y curl tar \
     && tar -xzvf ${APP_NAME}.tar.gz
 
 
-FROM debian:bookworm
+FROM nginx:1.27.5-alpine
 WORKDIR /app/frontend
-RUN apt update && apt install -y nginx
-COPY ./nginx/default.conf /etc/nginx/sites-available/default
-COPY --from=builder --chown=www-data:www-data /usr/src/app/frontend/dist/ .
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /usr/src/app/frontend/dist/ .
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
