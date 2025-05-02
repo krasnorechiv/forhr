@@ -1,0 +1,15 @@
+server {
+  listen 8082;
+
+  location /api {
+    proxy_pass http://pelmennaya-backend:8081;
+  }
+  location / {
+    root /app/frontend;
+    index index.html;
+  }
+  location /momo-store {
+    alias /app/frontend;
+    try_files $uri $uri/ /momo-store/index.html;
+  }
+}
