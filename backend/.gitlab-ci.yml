@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - release-binary
+  - docker-gen-image
 variables:
   GO_VERSION: "${GO_VERSION}"
   APP_NAME: pelmennaya-backend-${VERSION}
@@ -58,3 +59,38 @@ upload-binary-pelmennaya:
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}/${APP_NAME}
   needs:
     - sonarqube-check-backend
+
+build-docker-backend-code-job:
+  stage: docker-gen-image
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
+  script:
+    - echo "test"
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}/backend"
+      --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}"
+      --build-arg VERSION=$VERSION
+      --build-arg CRED_NEXUS="${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
+      --build-arg URL=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}
+      --build-arg APP_NAME=${APP_NAME}
+      --cache=true
+  needs:
+    - sonarqube-check-backend
+
+release-backend-docker-image:
+  stage: docker-gen-image
+  variables:
+    GIT_STRATEGY: none
+  image:
+    name: gcr.io/go-containerregistry/crane:debug
+    entrypoint: [ "" ]
+  cache: [ ]
+  before_script:
+    - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - crane tag $CI_REGISTRY_IMAGE/${APP_NAME} $VERSION
+  needs:
+    - build-docker-backend-code-job
