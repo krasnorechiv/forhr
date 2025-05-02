@@ -95,4 +95,4 @@ release-frontend-docker-image:
   script:
     - crane tag $CI_REGISTRY_IMAGE/$DOCKER_APP_NAME $VERSION
   needs:
-    - build-docker-backend-code-job
+    - build-docker-frontend-code-job
