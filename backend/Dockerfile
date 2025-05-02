@@ -1,10 +1,8 @@
 FROM golang:1.24.2-bookworm as builder
-ARG VERSION=${VERSION} \
-    CRED_NEXUS=${CRED_NEXUS} \
+ARG CRED_NEXUS=${CRED_NEXUS} \
     URL_TO_DOWNLOAD=${URL_TO_DOWNLOAD} \
     APP_NAME=${APP_NAME}
 WORKDIR /usr/app
-RUN echo "Building ${APP_NAME} ${VERSION} from ${URL_TO_DOWNLOAD} ${CRED_NEXUS}"
 RUN curl -O -u $CRED_NEXUS $URL_TO_DOWNLOAD/${APP_NAME} && chmod +x ${APP_NAME}
 
 FROM golang:1.24.2-bookworm
