@@ -76,7 +76,7 @@ build-docker-backend-code-job:
       --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --build-arg "URL=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}"
       --build-arg "APP_NAME=${APP_NAME}"
-      --cache=true
+      --cache=false
   needs:
     - upload-binary-pelmennaya
 
