@@ -3,7 +3,7 @@ ARG CRED_NEXUS=${CRED_NEXUS} \
     URL_TO_DOWNLOAD=${URL_TO_DOWNLOAD} \
     APP_NAME=${APP_NAME}
 WORKDIR /usr/src/app
-RUN apt update && apt install curl tar \
+RUN apt update && apt install -y curl tar \
     && curl -O -u ${CRED_NEXUS} ${URL_TO_DOWNLOAD}/${APP_NAME}.tar.gz \
     && tar -xzvf ${APP_NAME}.tar.gz
 
