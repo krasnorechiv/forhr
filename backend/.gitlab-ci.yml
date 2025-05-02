@@ -92,6 +92,6 @@ release-backend-docker-image:
   before_script:
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - crane tag $CI_REGISTRY_IMAGE/$APP_NAME $VERSION
+    - crane tag $CI_REGISTRY_IMAGE/$DOCKER_APP_NAME $VERSION
   needs:
     - build-docker-backend-code-job
