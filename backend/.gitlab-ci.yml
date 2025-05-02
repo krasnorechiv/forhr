@@ -72,13 +72,13 @@ build-docker-backend-code-job:
       --context "${CI_PROJECT_DIR}/backend"
       --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}"
-      --build-arg VERSION=$VERSION
-      --build-arg CRED_NEXUS=$NEXUS_REPO_USER:$NEXUS_REPO_PASS
-      --build-arg URL=$NEXUS_REPO_URL/repository/$NEXUS_REPO_BACKEND_NAME/$VERSION
-      --build-arg APP_NAME=$APP_NAME
+      --build-arg "VERSION=${VERSION}"
+      --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
+      --build-arg "URL=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${VERSION}"
+      --build-arg "APP_NAME=${APP_NAME}"
       --cache=true
   needs:
-    - sonarqube-check-backend
+    - upload-binary-pelmennaya
 
 release-backend-docker-image:
   stage: docker-gen-image
