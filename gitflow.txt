@@ -1,0 +1,17 @@
+Пока тестирую git flow. Что это из себя представляет:
+1) Есть master ветка и чтобы ввозить новые фичи делаем от master ветки ветку develop
+2) Задумали новую фичу делаем следующее: git checkout -b feature/production-build develop - или лучше git flow feature start production-build - мы создали новую ветку от ветки develop
+3) Работаем в ней и публикуем её (делаем push) либо git flow feature publish имя-фичи
+4) Когда работа с веткой завершена, мы можем просто слить с developer веткой: 
+4.1) без gitflow: git checkout develop && git merge --no-ff production-build 
+4.2) c gitflow: git flow feature finish production-build
+------
+Когда в ветку develop слито достаточно кода, от ветки девелоп создаётся релизная ветка, например release/0.3.0. Создание ветки означает следующий цикл релиза, в ходе которой новая функциональность уже не добавляется, а происходит отладка багов и всего такого. Когда всё готово, ветка release сливается с master. а Master обратно в develop. 
+------
+Сделаем новую релизную ветку:
+Без использования gitflow: 
+git checkout develop
+git checkout -b release/0.5.0
+При использовании git flow:
+git flow release start 0.5.0
+git flow release publish 0.5.0
