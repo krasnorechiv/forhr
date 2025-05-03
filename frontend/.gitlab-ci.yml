@@ -14,19 +14,17 @@ cache:
 
 build-frontend-code-job:
   stage: build
-  cache: []  
   image:
     name: node:${NODE_VERSION}
-  variables:
-    NODE_OPTIONS: "--openssl-legacy-provider"
-    NODE_ENV: production 
-    VUE_APP_API_URL: http://pelmennaya-backend:8081
   script:
     - cd frontend
-    - npm cache clean --force
-    - rm -rf node_modules
     - npm install
-    - npm run build
+    - > 
+      NODE_OPTIONS="--openssl-legacy-provider" 
+      NODE_ENV="production" 
+      VUE_APP_API_URL="http://pelmennaya-backend:8081" 
+      npm run build
+      
 
 
 sonarqube-check-frontend:
