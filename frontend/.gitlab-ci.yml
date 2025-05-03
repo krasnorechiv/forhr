@@ -18,6 +18,9 @@ build-frontend-code-job:
     name: node:${NODE_VERSION}
   variables:
     NODE_OPTIONS: "--openssl-legacy-provider"
+    NODE_ENV: production 
+    VUE_APP_API_URL: http://pelmennaya-backend:8081
+
   script:
     - cd frontend
     - npm install

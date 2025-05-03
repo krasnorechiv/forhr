@@ -12,7 +12,7 @@ variables:
 cache:
   paths:
     - .go/pkg/mod/  # передаю кеш в другие задачи
-    - backend/exe   # сюда будет скомпилирован бинарь
+    - backend/exe/   # сюда будет скомпилирован бинарь
 
 build-backend-code-job:
   stage: build
