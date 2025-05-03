@@ -22,7 +22,7 @@ build-frontend-code-job:
     - > 
       NODE_OPTIONS="--openssl-legacy-provider" 
       NODE_ENV="production" 
-      VUE_APP_API_URL="http://pelmennaya-backend:8081" 
+      VUE_APP_API_URL="http://localhost:8081" 
       npm run build
       
 
