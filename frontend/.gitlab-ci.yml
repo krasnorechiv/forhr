@@ -19,12 +19,10 @@ build-frontend-code-job:
   variables:
     NODE_OPTIONS: "--openssl-legacy-provider"
     NODE_ENV: production 
-    VUE_APP_API_URL: http://pelmennaya-backend:8081
-
   script:
     - cd frontend
     - npm install
-    - npm run build
+    - VUE_APP_API_URL=http://pelmennaya-backend:8081 npm run build
 
 
 sonarqube-check-frontend:
