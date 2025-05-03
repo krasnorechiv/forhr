@@ -36,3 +36,28 @@ git push --tags
 
 Или используем git flow:
 git flow release finish '0.1.0'
+------
+Хотфиксы:
+Они единственные собираются из мастер ветки. А потом уже сливаются в master и develop
+Создание хотфикса без gitflow:
+git checkout master
+git checkout -b hotfix_branch
+С использованием git-flow:
+git flow hotfix start hotfix_branch 
+Далее объединяется с мастер и девелопем и можно удалять хотфикс ветку:
+Без gitflow:
+1) git checkout master
+2) git merge hotfix_branch
+3) git checkout develop
+4) git merge hotfix_branch
+5) git branch -d hotfix_branch
+или через git-flow
+1) git flow hotfix finish hotfix_branch
+
+
+Последовательность работы с gitflow:
+1) из мастер создается ветка девелоп
+2) из девелоп делаются ветки феютчуре
+3) когда разработка фичи завершается она сливается с девелопом
+4) из девелопа появляется ветка релиз
+5) когда ветка релиза готова, она объединяется с develop и мастер
