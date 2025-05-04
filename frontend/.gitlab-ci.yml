@@ -25,17 +25,21 @@ generate-version:
       if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
         # Релизная версия из тега (v1.2.3 → 1.2.3)
         VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+        DIR_BRANCH=release
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
         # Develop версия (1.0.1-dev+commit)
         VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-dev+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        DIR_BRANCH=develop        
       elif [[ "$CI_COMMIT_BRANCH" =~ ^feature/ ]]; then
         # Feature версия (1.0.1-feat-branchname+commit)
         BRANCH_NAME=$(echo "$CI_COMMIT_REF_SLUG" | sed 's/feature-/feat-/')
         VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-${BRANCH_NAME}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        DIR_BRANCH=feature      
       elif [[ "$CI_COMMIT_BRANCH" =~ ^release/ ]]; then
         # RC версия (1.0.1-rc.1+commit)
         RC_NUM=$(echo "$CI_COMMIT_REF_NAME" | awk -F'[-.]' '{print $2}')
         VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${RC_NUM}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        DIR_BRANCH=release-candidate            
       else
         # Fallback версия
         VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
@@ -44,6 +48,7 @@ generate-version:
     - echo "APP_NAME=pelmennaya-frontend-${VERSION}" > build.env
     - echo "VERSION=${VERSION}" >> build.env
     - echo "FRONTEND_VERSION=${VERSION}" >> build.env
+    - echo "DIR_BRANCH=${DIR_BRANCH} >> build.env"
     - cat build.env
   artifacts:
     reports:
@@ -97,12 +102,12 @@ upload-binary-pelmennaya:
   stage: release-binary
   script:
     - echo "Generated version $VERSION"
-    - echo "Generated version $APP_VERSION"
+    - echo "Generated version $APP_NAME"
     - tar czvf ${APP_NAME}.tar.gz frontend/dist
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --upload-file ${APP_NAME}.tar.gz
-      ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}/${APP_NAME}.tar.gz
+      ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${DIR_BRANCH}/${APP_NAME}.tar.gz
   needs:
     - job: sonarqube-check-frontend
       artifacts: true
@@ -116,13 +121,14 @@ build-docker-frontend-code-job:
     entrypoint: [""]
   # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
   script:
-    - echo "test"
+    - echo $DIR_BRANCH
+    - echo $VERSION
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/frontend"
       --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}/${DOCKER_APP_NAME}"
       --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
-      --build-arg "URL_TO_DOWNLOAD=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}"
+      --build-arg "URL_TO_DOWNLOAD=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${DIR_BRANCH}"
       --build-arg "APP_NAME=${DOCKER_APP_NAME}-${VERSION}"
       --cache=true
   needs:
