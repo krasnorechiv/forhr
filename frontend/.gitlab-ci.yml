@@ -1,4 +1,5 @@
 stages:
+  - prepare
   - build
   - test
   - release-binary
@@ -7,22 +8,51 @@ variables:
   NODE_VERSION: "${NODE_VERSION}"
   APP_NAME: pelmennaya-frontend-${VERSION}
   DOCKER_APP_NAME: pelmennaya-frontend
-  VERSION: >-
-            $([ -n "$CI_COMMIT_TAG" ] && 
-            echo "$CI_COMMIT_TAG" | sed 's/^v//' || 
-            echo "1.0.0-$(echo "${CI_COMMIT_REF_SLUG}" | tr '/' '-')+$(echo "${CI_COMMIT_SHA}" | cut -c1-8)"
-            )
-  FRONTEND_VERSION: 11.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
+  VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
+  FRONTEND_VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
+  MAJOR: "1"
+  MINOR: "0"
+  PATCH: "0"
 cache:
   paths:
     - frontend/dist/ # передаю кеш в другие задачи
+
+generate-version:
+  stage: prepare
+  script:
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
+        # Релизная версия из тега (v1.2.3 → 1.2.3)
+        VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
+        # Develop версия (1.0.1-dev+commit)
+        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-dev+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^feature/ ]]; then
+        # Feature версия (1.0.1-feat-branchname+commit)
+        BRANCH_NAME=$(echo "$CI_COMMIT_REF_SLUG" | sed 's/feature-/feat-/')
+        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-${BRANCH_NAME}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+      elif [[ "$CI_COMMIT_BRANCH" =~ ^release/ ]]; then
+        # RC версия (1.0.1-rc.1+commit)
+        RC_NUM=$(echo "$CI_COMMIT_REF_NAME" | awk -F'[-.]' '{print $2}')
+        VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${RC_NUM}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+      else
+        # Fallback версия
+        VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+      fi
+    - echo "Generated version $VERSION"
+    - echo "APP_NAME=pelmennaya-frontend-${VERSION}" > build.env
+    - echo "VERSION=${VERSION}" >> build.env
+    - echo "FRONTEND_VERSION=${VERSION}" >> build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+
 
 build-frontend-code-job:
   stage: build
   image:
     name: node:${NODE_VERSION}
   script:
-    - echo $VERSION
     - cd frontend
     - npm install
     - > 
@@ -30,7 +60,8 @@ build-frontend-code-job:
       NODE_ENV="production" 
       VUE_APP_API_URL="/api" 
       npm run build
-      
+  needs:
+    - generate-version      
 
 
 sonarqube-check-frontend:
