@@ -104,7 +104,7 @@ upload-binary-pelmennaya:
       --upload-file backend/exe/${APP_NAME}-${VERSION}
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${DIR_BRANCH}/${APP_NAME}-${VERSION}
   needs:
-    - job: sonarqube-check-frontend
+    - job: sonarqube-check-backend
       artifacts: true
     - job: generate-version
       artifacts: true
