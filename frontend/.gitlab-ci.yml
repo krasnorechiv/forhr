@@ -106,7 +106,7 @@ upload-binary-pelmennaya:
     - tar czvf ${APP_NAME}-${VERSION}.tar.gz frontend/dist
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
-      --upload-file ${APP_NAME}.tar.gz
+      --upload-file ${APP_NAME}-${VERSION}.tar.gz
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${DIR_BRANCH}/${APP_NAME}-${VERSION}.tar.gz
   needs:
     - job: sonarqube-check-frontend
@@ -123,6 +123,7 @@ build-docker-frontend-code-job:
   script:
     - echo $DIR_BRANCH
     - echo $VERSION
+    - env
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/frontend"
       --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile"
