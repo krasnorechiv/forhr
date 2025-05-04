@@ -7,7 +7,11 @@ variables:
   NODE_VERSION: "${NODE_VERSION}"
   APP_NAME: pelmennaya-frontend-${VERSION}
   DOCKER_APP_NAME: pelmennaya-frontend
-  VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
+  VERSION: >-
+            $([ -n "$CI_COMMIT_TAG" ] && 
+            echo "$CI_COMMIT_TAG" | sed 's/^v//' || 
+            echo "1.0.0-$(echo "${CI_COMMIT_REF_SLUG}" | tr '/' '-')+$(echo "${CI_COMMIT_SHA}" | cut -c1-8)"
+            )
   FRONTEND_VERSION: 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
 cache:
   paths:
