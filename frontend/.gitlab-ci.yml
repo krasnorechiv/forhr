@@ -96,6 +96,8 @@ sonarqube-check-frontend:
 upload-binary-pelmennaya:
   stage: release-binary
   script:
+    - echo "Generated version $VERSION"
+    - echo "Generated version $APP_VERSION"
     - tar czvf ${APP_NAME}.tar.gz frontend/dist
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
