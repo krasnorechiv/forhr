@@ -127,7 +127,7 @@ build-docker-backend-code-job:
       --cache=true
   needs:
     - upload-binary-pelmennaya
-    - generate-version
+
 
 release-backend-docker-image:
   stage: docker-gen-image
@@ -143,4 +143,3 @@ release-backend-docker-image:
     - crane tag $CI_REGISTRY_IMAGE/$APP_NAME $VERSION
   needs:
     - build-docker-backend-code-job
-    - generate-version    
