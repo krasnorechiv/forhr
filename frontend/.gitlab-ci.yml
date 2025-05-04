@@ -147,7 +147,7 @@ release-frontend-docker-image:
   before_script:
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - 
+    - env
     - crane tag $CI_REGISTRY_IMAGE/$APP_NAME $VERSION
   needs:
     - build-docker-frontend-code-job
