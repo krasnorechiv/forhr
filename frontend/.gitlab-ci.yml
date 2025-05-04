@@ -104,7 +104,10 @@ upload-binary-pelmennaya:
       --upload-file ${APP_NAME}.tar.gz
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}/${APP_NAME}.tar.gz
   needs:
-    - sonarqube-check-frontend
+    - job: sonarqube-check-frontend
+      artifacts: true
+    - job: generate-version
+      artifacts: true
 
 build-docker-frontend-code-job:
   stage: docker-gen-image
@@ -122,7 +125,6 @@ build-docker-frontend-code-job:
       --build-arg "URL_TO_DOWNLOAD=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${VERSION}"
       --build-arg "APP_NAME=${DOCKER_APP_NAME}-${VERSION}"
       --cache=true
-
   needs:
     - upload-binary-pelmennaya
 
