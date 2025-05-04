@@ -33,12 +33,12 @@ generate-version:
       elif [[ "$CI_COMMIT_BRANCH" =~ ^feature/ ]]; then
         # Feature версия (1.0.1-feat-branchname+commit)
         BRANCH_NAME=$(echo "$CI_COMMIT_REF_SLUG" | sed 's/feature-/feat-/')
-        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-${BRANCH_NAME}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-${BRANCH_NAME}_$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
         DIR_BRANCH=feature      
       elif [[ "$CI_COMMIT_BRANCH" =~ ^release/ ]]; then
         # RC версия (1.0.1-rc.1+commit)
         RC_NUM=$(echo "$CI_COMMIT_REF_NAME" | awk -F'[-.]' '{print $2}')
-        VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${RC_NUM}+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        VERSION="${MAJOR}.${MINOR}.${PATCH}-rc.${RC_NUM}_$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
         DIR_BRANCH=release-candidate            
       else
         # Fallback версия
