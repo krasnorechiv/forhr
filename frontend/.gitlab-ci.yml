@@ -17,10 +17,6 @@ cache:
 generate-version:
   stage: prepare
   script:
-    - echo ${CI_COMMIT_SHA}
-    - echo ${CI_COMMIT_REF_SLUG}
-    - echo ${CI_COMMIT_REF_NAME}
-    - echo 1.0.${CI_PIPELINE_ID}-${CI_COMMIT_BRANCH}
     - |
       if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
         # Релизная версия из тега (v1.2.3 → 1.2.3)
@@ -43,9 +39,8 @@ generate-version:
       else
         # Fallback версия
         VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        DIR_BRANCH=unknown
       fi
-    - echo "Generated version $VERSION"
-    - echo "$APP_NAME"
     - echo "VERSION=${VERSION}" > build.env
     - echo "FRONTEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
@@ -69,7 +64,6 @@ build-frontend-code-job:
       npm run build
   needs:
     - generate-version      
-
 
 sonarqube-check-frontend:
   stage: test
@@ -101,8 +95,6 @@ sonarqube-check-frontend:
 upload-binary-pelmennaya:
   stage: release-binary
   script:
-    - echo "Generated version $VERSION"
-    - echo "Generated version $APP_NAME"
     - tar czvf ${APP_NAME}-${VERSION}.tar.gz frontend/dist
     - >
       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
@@ -121,9 +113,6 @@ build-docker-frontend-code-job:
     entrypoint: [""]
   # переменные CI_REGISTRY_USER, CI_REGISTRY_PASSWORD, CI_REGISTRY генерятся Гитлабом, их задавать не надо
   script:
-    - echo $DIR_BRANCH
-    - echo $VERSION
-    - env
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/frontend"
       --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile"
@@ -148,7 +137,6 @@ release-frontend-docker-image:
   before_script:
     - crane auth login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - env
     - crane tag $CI_REGISTRY_IMAGE/$APP_NAME $VERSION
   needs:
     - build-docker-frontend-code-job
