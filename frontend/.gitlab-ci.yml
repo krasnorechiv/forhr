@@ -132,7 +132,7 @@ build-docker-frontend-code-job:
       --build-arg "APP_NAME=${DOCKER_APP_NAME}-${VERSION}"
       --cache=true
   needs:
-    - upload-binary-pelmennaya,
+    - upload-binary-pelmennaya
     - generate-version
 
 
