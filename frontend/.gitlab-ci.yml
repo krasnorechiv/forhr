@@ -22,6 +22,7 @@ build-frontend-code-job:
   image:
     name: node:${NODE_VERSION}
   script:
+    - echo $VERSION
     - cd frontend
     - npm install
     - > 
