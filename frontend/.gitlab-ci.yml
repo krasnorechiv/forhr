@@ -127,7 +127,7 @@ build-docker-frontend-code-job:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/frontend"
       --dockerfile "${CI_PROJECT_DIR}/frontend/Dockerfile"
-      --destination "${CI_REGISTRY_IMAGE}/${DOCKER_APP_NAME}"
+      --destination "${CI_REGISTRY_IMAGE}/${APP_NAME}"
       --build-arg "CRED_NEXUS=${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}"
       --build-arg "URL_TO_DOWNLOAD=${NEXUS_REPO_URL}/repository/${NEXUS_REPO_FRONTEND_NAME}/${DIR_BRANCH}"
       --build-arg "APP_NAME=${APP_NAME}-${VERSION}"
