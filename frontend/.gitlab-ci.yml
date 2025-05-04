@@ -48,7 +48,7 @@ generate-version:
     - echo "APP_NAME=pelmennaya-frontend-${VERSION}" > build.env
     - echo "VERSION=${VERSION}" >> build.env
     - echo "FRONTEND_VERSION=${VERSION}" >> build.env
-    - echo "DIR_BRANCH=${DIR_BRANCH} >> build.env"
+    - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
     - cat build.env
   artifacts:
     reports:
@@ -132,7 +132,9 @@ build-docker-frontend-code-job:
       --build-arg "APP_NAME=${DOCKER_APP_NAME}-${VERSION}"
       --cache=true
   needs:
-    - upload-binary-pelmennaya
+    - upload-binary-pelmennaya,
+    - generate-version
+
 
 release-frontend-docker-image:
   stage: docker-gen-image
@@ -148,3 +150,4 @@ release-frontend-docker-image:
     - crane tag $CI_REGISTRY_IMAGE/$DOCKER_APP_NAME $VERSION
   needs:
     - build-docker-frontend-code-job
+    - generate-version
