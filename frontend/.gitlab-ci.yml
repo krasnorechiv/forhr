@@ -45,6 +45,7 @@ generate-version:
     - echo "FRONTEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
     - cat build.env
+    - echo $CI_COMMIT_BRANCH
   artifacts:
     reports:
       dotenv: build.env

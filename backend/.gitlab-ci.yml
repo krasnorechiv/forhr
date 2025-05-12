@@ -43,6 +43,7 @@ generate-version:
         VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
         DIR_BRANCH=unknown
       fi
+    - echo $CI_COMMIT_BRANCH
     - echo "VERSION=${VERSION}" > build.env
     - echo "BACKEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
