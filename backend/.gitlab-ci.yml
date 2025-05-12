@@ -61,8 +61,17 @@ build-backend-code-job:
   script:
     - cd backend/
     - go build -o exe/$APP_NAME-$VERSION ./cmd/api
+    - ls exe/
+  cache:
+    paths:
+    - backend/exe
   needs:
-    - generate-version    
+    - generate-version
+  artifacts:
+    paths:
+      - backend/exe/  # Явно передаём бинарник
+    expire_in: 1 hour
+      
 
 sonarqube-check-backend:
   stage: test
@@ -100,6 +109,8 @@ upload-binary-pelmennaya:
       --upload-file backend/exe/${APP_NAME}-${VERSION}
       ${NEXUS_REPO_URL}/repository/${NEXUS_REPO_BACKEND_NAME}/${DIR_BRANCH}/${APP_NAME}-${VERSION}
   needs:
+    - job: build-backend-code-job
+      artifacts: true
     - job: sonarqube-check-backend
       artifacts: true
     - job: generate-version
