@@ -52,7 +52,6 @@ generate-version:
     - echo "BACKEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
     - env
-    - env
 
   artifacts:
     reports:
