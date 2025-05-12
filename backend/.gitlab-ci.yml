@@ -67,6 +67,10 @@ build-backend-code-job:
     - backend/exe
   needs:
     - generate-version
+  artifacts:
+    paths:
+      - backend/exe/  # Явно передаём бинарник
+    expire_in: 1 hour
       
 
 sonarqube-check-backend:
