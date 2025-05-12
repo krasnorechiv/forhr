@@ -9,7 +9,7 @@ variables:
   APP_NAME: pelmennaya-backend
   MAJOR: "1"
   MINOR: "0"
-  PATCH: "0"
+  PATCH: "1"
   GOPATH: "$CI_PROJECT_DIR/.go"
 cache:
   paths:
@@ -20,9 +20,13 @@ generate-version:
   stage: prepare
   script:
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "main" && -n "$CI_COMMIT_TAG" ]]; then
+      if [[ -n "$CI_COMMIT_TAG" ]]; then
         # Релизная версия из тега (v1.2.3 → 1.2.3)
-        VERSION=$(echo "$CI_COMMIT_TAG"-${CI_COMMIT_BRANCH} $ | sed 's/^r//')
+        VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^r//')  # Удаляем 'v' при наличии
+        DIR_BRANCH=release
+      elif [[ "$CI_COMMIT_BRANCH" == "main" ]]; then
+      # main без тега (например, ручной запуск пайплайна)
+        VERSION="${MAJOR}.${MINOR}.${PATCH}"
         DIR_BRANCH=release
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
         # Develop версия (1.0.1-dev+commit)
@@ -47,6 +51,7 @@ generate-version:
     - echo "VERSION=${VERSION}" > build.env
     - echo "BACKEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
+    - env
 
   artifacts:
     reports:
