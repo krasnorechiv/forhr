@@ -62,6 +62,9 @@ build-backend-code-job:
     - cd backend/
     - go build -o exe/$APP_NAME-$VERSION ./cmd/api
     - ls exe/
+  cache:
+    paths:
+    - backend/exe
   needs:
     - generate-version
       
