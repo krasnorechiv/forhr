@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"yandex_cloud_network","Source":"./modules/tf-yc-network","Dir":"modules/tf-yc-network"},{"Key":"yandex_cloud_vm","Source":"./modules/tf-yc-instance","Dir":"modules/tf-yc-instance"}]}
