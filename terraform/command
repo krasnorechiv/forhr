@@ -1,0 +1,7 @@
+terraform plan -var="cloud-id=b1g654ao9kplmlii6enm" \
+ -var="folder-id=b1gpm0guidv16gd8344e" \
+ -var="cloud-id=b1g654ao9kplmlii6enm" \
+ -var="token1=t1.9euelZqNm5rNkseQno3Mjc-Ti5yUm-3rnpWakpHKmovOm8jLkM_JkMjInJfl9PdwQx0_-e86Kgzu3fT3MHIaP_nvOioM7s3n9euelZqZlpyJi53Kx8-PmMqMj8yUiu_8xeuelZqZlpyJi53Kx8-PmMqMj8yUig.OFQSYFaEd1QrhU405ii4Xv-DY2daDiy7uHJgdffk0jQs1I1LsnwQz399J3Axr_6SWP2fq20QD3QmEj5P_FhoBw" \
+ -var="zone1=ru-central1-a" \
+ -var="vm_image-id=ubuntu-2204-lts" \
+ -var="vm_name=test_vm"
