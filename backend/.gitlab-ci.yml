@@ -26,7 +26,7 @@ generate-version:
         DIR_BRANCH=release
       elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
         # Develop версия (1.0.1-dev+commit)
-        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-dev+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        VERSION="${MAJOR}.${MINOR}.$(($PATCH + 1))-dev_$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
         DIR_BRANCH=develop        
       elif [[ "$CI_COMMIT_BRANCH" =~ ^feature/ ]]; then
         # Feature версия (1.0.1-feat-branchname+commit)
