@@ -3,11 +3,6 @@
 data "yandex_compute_image" "my_image" {
     family = var.vm_image_id
 }
-resource "null_resource" "ssh_key_trigger" {
-  triggers = {
-    ssh_key = var.ssh_public_key
-  }
-}
  
 resource "yandex_compute_instance" "vm-1" {
     name = var.vm_name
