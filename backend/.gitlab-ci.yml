@@ -215,9 +215,8 @@ terraforming:
       -backend-config="key=terraform/${ENVIRONMENT}/state"      
     - terraform workspace select ${ENVIRONMENT} || terraform workspace new ${ENVIRONMENT}
     - terraform show
-    - terraform apply -auto-approve
-    - echo "PUBLIC_IP_${ENVIRONMENT}=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env
-
+    - terraform apply -auto-approve -var="vm_image_id=ubuntu-2204-lts"
+    - echo "PUBLIC_IP=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env
   needs:
     - create-auth-and-bucket  
   artifacts:
