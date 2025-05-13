@@ -219,9 +219,9 @@ connect-to-machine:
     - export ANSIBLE_CONFIG=$(pwd)/repo/ansible/ansible.cfg
   script:
     - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!'"
-    - envsubst < ./repo/ansible/inventory/inventory.yml.tmpl > ./repo/ansible/inventory/inventory.yml
-    - envsubst < ./repo/ansible/group_vars/all.yml.tmpl > ./repo/ansible/group_vars/all.yml
+    - envsubst < $(pwd)/repo/ansible/inventory/inventory.yml.tmpl > $(pwd)/repo/ansible/inventory/inventory.yml
+    - envsubst < $(pwd)/repo/ansible/group_vars/all.yml.tmpl > $(pwd)/repo/ansible/group_vars/all.yml
     - ansible-playbook ./repo/ansible/ansible-playbook.yml
       --tags frontend
-      -i .repo/ansible/inventory/inventory.yml 
+      -i $(pwd)/repo/ansible/inventory/inventory.yml 
       -e "registry_image_frontend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
