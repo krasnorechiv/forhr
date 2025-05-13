@@ -226,4 +226,4 @@ connect-to-machine:
       -i $(pwd)/repo/ansible/inventory/inventory.yml 
       -e "registry_image_frontend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}"
       -e "@repo/ansible/group_vars/all.yml" 
-    - ssh ssh ansible@"$PUBLIC_IP" "docker ps"
+    - ssh ansible@"$PUBLIC_IP" "docker ps"
