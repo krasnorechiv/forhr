@@ -15,7 +15,7 @@ variables:
   PATCH: "2"
   TF_VERS: "1.9.6"
   TF_VAR_zone1: "ru-central1-a"
-  TF_VAR_vm_name: "pelmennaya-vm"
+  TF_VAR_vm_name: "pelmennaya-vm-2"
   TF_VAR_ssh_public_keys: "qqq"
   TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
 cache:
