@@ -4,7 +4,7 @@ terraform {
       s3 = "https://storage.yandexcloud.net"
     }
     region     = "ru-central1"
-    key        = "terraform.tfstate"
+    key       = "terraform/${terraform.workspace}/state"
 
     skip_region_validation      = true
     skip_credentials_validation = true
