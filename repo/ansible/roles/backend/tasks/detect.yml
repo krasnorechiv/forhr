@@ -11,11 +11,16 @@
     old_color: "none"
   when: docker_check.rc != 0
 
-- name: Detect existing containers
-  command: docker ps -a --format "{{ '{{' }}.Names{{ '}}' }}"
-  register: existing_containers
-  when: docker_check.rc == 0
-  changed_when: false
+- name: Set default color for first deployment or when no containers exist
+  set_fact:
+    new_color: "green"
+    old_color: "none"
+  when: 
+    - docker_check.rc != 0 or (
+        docker_check.rc == 0 and 
+        "'pelmennaya-backend-green' not in existing_containers.stdout" and 
+        "'pelmennaya-backend-blue' not in existing_containers.stdout"
+      )
 
 - name: Set colors for green -> blue switch
   set_fact:
