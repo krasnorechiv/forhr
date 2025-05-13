@@ -187,7 +187,7 @@ terraforming:
       - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
       - export PATH=$PATH:/usr/local/bin  
   script:
-    - cd terraform
+    - cd ./repo/terraform
     - >
       terraform init 
       -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
