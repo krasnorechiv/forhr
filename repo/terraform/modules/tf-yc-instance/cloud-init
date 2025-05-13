@@ -1,0 +1,9 @@
+#cloud-config
+users:
+  - name: ansible
+    groups: sudo
+    shell: /bin/bash
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMNytV1ZycZ3NwBJ5l5bP753VzIoKsd4TUdeBg0CS47q opl3@ab350ds3h
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCaeGU0tCwoQVOdEL0ljCN2/yUvZ6Y4Kidy+wHHXD294ctHmF9CVhF4/VFLQ7/feSfWpH/HbX9MSBRd5wcP6jNt7HNxQbAIwny3ba7A/w5UmrkaoYuZFUEChnYVgp9Zv0cu8DvxZx4vfhQBHugG2NOlZpiy3mq79lo5SB5hVmmwvxiA4iib15wR2eKGrtYjVY6YozWDYLYTU0oM7AiGCy5HdcP0zGao5c+D4Ip/Wb0HKeR974YBBRVnD/1W5BTwm3EyfEVKg2REWrNN5qGPemkx3oSOm3kxO7+EjspGdVs2EEKP119/LNw21Pg9Ur9o04n3VzHbqFvVj6B+tzWqQv1V7RZ1UsG1p0mHGA5T79WAmLV28IgMQBhYytUx2A5r/u5u5g/ovlMMg55+koOaxGq8hb+LquvMAztOLscf7mM7X9Bt5h5fHxDAEdUjHc1BLfGhcRcYHacMI2sKnYSyrGWnYqzGrDOXzKQ2JT/N++UVuUzpEUeZ9utPlJRIjPTf2w0= opl3@dellpc

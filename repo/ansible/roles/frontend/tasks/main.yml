@@ -1,0 +1,11 @@
+---
+- name: Deploy frontend container
+  community.docker.docker_container:
+    name: "{{ frontend_container_name }}"
+    image: "{{ registry_image_frontend }}"
+    state: started
+    networks:
+      - name: "{{ docker_network }}"
+    ports:
+      - "80:80"
+

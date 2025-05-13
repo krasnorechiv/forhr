@@ -1,0 +1,12 @@
+terraform plan -var="cloud-id=b1g654ao9kplmlii6enm" \
+ -var="folder-id=b1gpm0guidv16gd8344e" \
+ -var="cloud-id=b1g654ao9kplmlii6enm" \
+ -var="token1=t1.9euelZrIkc2WjImPkcfGnsmTlpqKm-3rnpWakpHKmovOm8jLkM_JkMjInJfl8_dGfRg_-e8WfFxX_t3z9wYsFj_57xZ8XFf-zef1656Vmpaey8eczJHGkJyWkprIksiP7_zF656Vmpaey8eczJHGkJyWkprIksiP._3o-4Xhfp0x89kvCxnuDiIfKKICwT6QDo-u4-N9_9pK2dN-nbvDDSugFjfwHFw4Bv55H-pF-zxejmY-xj3MkAQ" \
+ -var="zone1=ru-central1-a" \
+ -var="vm_image-id=ubuntu-2204-lts" \
+ -var="vm_name=test_vm"
+
+ yc iam access-key create --folder-id=b1gpm0guidv16gd8344e --service-account-name opl3
+ terraform init -backend-config="access_key=YCAJEI4mbli1dDC1lkedzQ8v9"   -backend-config="secret_key=YCMIvv0lQqP6hMPjoAP2Gh4lqVQxcdb74R_V8Jis"
+BACK_KEY_ID
+BACK_KEY_SCRT

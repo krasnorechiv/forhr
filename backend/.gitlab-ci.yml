@@ -4,6 +4,10 @@ stages:
   - test
   - release-binary
   - docker-gen-image
+  - create-auth
+  - create-machine
+  - connect-to-machine
+
 variables:
   GO_VERSION: "${GO_VERSION}"
   APP_NAME: pelmennaya-backend
@@ -11,10 +15,11 @@ variables:
   MINOR: "0"
   PATCH: "2"
   GOPATH: "$CI_PROJECT_DIR/.go"
-cache:
-  paths:
-    - .go/pkg/mod/  # передаю кеш в другие задачи
-    - backend/exe/   # сюда будет скомпилирован бинарь
+  TF_VERS: "1.9.6"
+  TF_VAR_zone1: "ru-central1-a"
+  TF_VAR_vm_name: "pelmennaya-vm"
+  TF_VAR_ssh_public_keys: "qqq"
+  TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
 
 generate-version:
   stage: prepare
@@ -44,14 +49,12 @@ generate-version:
         DIR_BRANCH=release-candidate            
       else
         # Fallback версия
-        VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown+$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
+        VERSION="${MAJOR}.${MINOR}.${PATCH}-unknown-$(echo "$CI_COMMIT_SHA" | cut -c1-8)"
         DIR_BRANCH=unknown
       fi
-    - echo $CI_COMMIT_BRANCH
     - echo "VERSION=${VERSION}" > build.env
     - echo "BACKEND_VERSION=${VERSION}" >> build.env
     - echo "DIR_BRANCH=${DIR_BRANCH}" >> build.env
-    - env
 
   artifacts:
     reports:
@@ -66,10 +69,6 @@ build-backend-code-job:
   script:
     - cd backend/
     - go build -o exe/$APP_NAME-$VERSION ./cmd/api
-    - ls exe/
-  cache:
-    paths:
-    - backend/exe
   needs:
     - generate-version
   artifacts:
@@ -155,3 +154,78 @@ release-backend-docker-image:
   needs:
     - build-docker-backend-code-job
     - generate-version
+
+create-auth-and-bucket:
+  image: alpine:3.18
+  stage: create-auth
+  before_script:
+      - apk add bash curl unzip envsubst unzip jq
+      - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
+      - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
+      - chmod +x /usr/local/bin/terraform
+      - terraform --version
+      - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
+      - export PATH=$PATH:/usr/local/bin
+  script: 
+    - yc config set token ${YC_OATH_ID};
+      yc config set folder-id ${TF_VAR_folder_id}
+    - envsubst < ./repo/createbucket.sh | bash
+  needs:
+    - release-backend-docker-image
+  artifacts:
+    reports:
+      dotenv: auth.env
+    expire_in: 30 minutes
+    access: 'none' #через вебку не будет виден токен. Передача только между пайплайнами
+
+terraforming:
+  image: alpine:3.18
+  stage: create-machine
+  before_script:
+      - apk add bash curl unzip envsubst unzip jq
+      - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
+      - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
+      - chmod +x /usr/local/bin/terraform
+      - terraform --version
+      - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
+      - export PATH=$PATH:/usr/local/bin  
+  script:
+    - cd terraform
+    - >
+      terraform init 
+      -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
+      -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      -backend-config="bucket=${TF_STATE_BUCKET}"
+    - terraform show
+    - terraform apply -auto-approve -var="vm_image_id=ubuntu-2204-lts"
+    - echo "PUBLIC_IP=$(terraform output -json | jq -r '.public_address.value')" > $CI_PROJECT_DIR/terraform.env
+  needs:
+    - create-auth-and-bucket  
+  artifacts:
+    reports:
+      dotenv: "terraform.env"
+
+connect-to-machine:
+  stage: connect-to-machine
+  image: alpine:3.18
+  needs: 
+    - terraforming
+    - generate-version
+  before_script:
+    - apk add --no-cache openssh-client ansible envsubst
+    - eval $(ssh-agent -s)  
+    - echo "$SSH_ID_RSA" | base64 -d |  tr -d '\r' | ssh-add -  
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H "$PUBLIC_IP" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - export ANSIBLE_CONFIG=$(pwd)/repo/ansible/ansible.cfg
+  script:
+    - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!'"
+    - envsubst < ./repo/ansible/inventory/inventory.yml.tmpl > ./repo/ansible/inventory/inventory.yml
+    - envsubst < ./repo/ansible/group_vars/all.yml.tmpl > ./repo/ansible/group_vars/all.yml
+    - ansible-playbook ./repo/ansible/ansible-playbook.yml
+      --tags backend
+      -i ansible/inventory/inventory.yml 
+      -e "registry_image_backend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
+      -e "backend_port=8081"

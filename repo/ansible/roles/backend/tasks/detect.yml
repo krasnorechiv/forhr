@@ -1,0 +1,34 @@
+---
+- name: Check if Docker is installed
+  command: which docker
+  register: docker_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Set default color for first deployment
+  set_fact:
+    new_color: "green"
+    old_color: "none"
+  when: docker_check.rc != 0
+
+- name: Detect existing containers
+  command: docker ps -a --format "{{ '{{' }}.Names{{ '}}' }}"
+  register: existing_containers
+  when: docker_check.rc == 0
+  changed_when: false
+
+- name: Set colors for green -> blue switch
+  set_fact:
+    new_color: "blue"
+    old_color: "green"
+  when:
+    - docker_check.rc == 0
+    - "'pelmennaya-backend-green' in existing_containers.stdout"
+
+- name: Set colors for blue -> green switch
+  set_fact:
+    new_color: "green"
+    old_color: "blue"
+  when:
+    - docker_check.rc == 0
+    - "'pelmennaya-backend-blue' in existing_containers.stdout"

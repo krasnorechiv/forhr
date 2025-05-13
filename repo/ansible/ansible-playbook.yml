@@ -1,0 +1,21 @@
+---
+- name: Install\Upgrade Docker Engine
+  hosts: 
+    - backend
+    - frontend
+  tags: all-check
+  roles:
+    - preparing
+
+- name: Install backend of Pelmennaya-Store
+  tags: backend
+  hosts: backend
+
+  roles: 
+    - backend
+
+- name: Install frontend of Pelmennaya-Store
+  tags: frontend
+  hosts: frontend
+  roles: 
+    - frontend
