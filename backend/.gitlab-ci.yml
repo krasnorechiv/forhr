@@ -225,7 +225,7 @@ connect-to-machine:
     - envsubst < $(pwd)/repo/ansible/inventory/inventory.yml.tmpl > $(pwd)/repo/ansible/inventory/inventory.yml
     - envsubst < $(pwd)/repo/ansible/group_vars/all.yml.tmpl > $(pwd)/repo/ansible/group_vars/all.yml
     - ansible-playbook ./repo/ansible/ansible-playbook.yml
-      --tags all-check,frontend
+      --tags all-check,backend
       -i $(pwd)/repo/ansible/inventory/inventory.yml 
       -e "registry_image_backend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
       -e "backend_port=8081"
