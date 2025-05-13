@@ -18,7 +18,6 @@ variables:
   TF_VERS: "1.9.6"
   TF_VAR_zone1: "ru-central1-a"
   TF_VAR_git_branch: $CI_COMMIT_BRANCH
-  TF_WORKSPACE: $CI_COMMIT_BRANCH == "main" ? "prod" : "dev"
 
   TF_VAR_ssh_public_keys: "qqq"
   TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
@@ -190,18 +189,26 @@ terraforming:
       - chmod +x /usr/local/bin/terraform
       - terraform --version
       - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
-      - export PATH=$PATH:/usr/local/bin  
+      - export PATH=$PATH:/usr/local/bin
+      - |
+        if [ "$CI_COMMIT_BRANCH" == "main" ]; then
+          export TF_WORKSPACE="prod"
+        else
+          export TF_WORKSPACE="dev"
+        fi  
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-prod"
         TF_VAR_vm_name_innet: "pelmennaya-prod-network"
         TF_VAR_vm_name_subnet: "pelmennaya-prod-subnet"
+        TF_WORKSPACE: "prod"
     - if: '$CI_COMMIT_BRANCH == "develop"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-dev"
         TF_VAR_vm_name_innet: "pelmennaya-dev-network"
         TF_VAR_vm_name_subnet: "pelmennaya-dev-subnet"
+        TF_WORKSPACE: "dev"
   script:
     - cd ./repo/terraform
     - >
