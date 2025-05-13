@@ -18,6 +18,9 @@ variables:
   TF_VERS: "1.9.6"
   TF_VAR_zone1: "ru-central1-a"
   TF_VAR_vm_name: "pelmennaya-vm"
+  TF_VAR_vm_name_net: "static-ip-pelmennaya"
+  TF_VAR_vm_name_innet: "pelmennaya-internal-network"
+  TF_VAR_vm_name_subnet: "pelmennaya-internal-subnet" 
   TF_VAR_ssh_public_keys: "qqq"
   TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
 

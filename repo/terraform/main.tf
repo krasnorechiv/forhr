@@ -1,6 +1,9 @@
 
 module "yandex_cloud_network" {
   source = "./modules/tf-yc-network"
+  vm_name_net = var.vm_name_net
+  vm_name_innet = var.vm_name_innet
+  vm_name_subnet = var.vm_name_subnet
 }
 
 
