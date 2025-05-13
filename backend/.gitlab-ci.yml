@@ -181,35 +181,35 @@ create-auth-and-bucket:
     expire_in: 30 minutes
     access: 'none' #через вебку не будет виден токен. Передача только между пайплайнами
 
-  terraforming:
-    image: alpine:3.18
-    stage: create-machine
-    before_script:
-        - apk add bash curl unzip envsubst unzip jq
-        - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
-        - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
-        - chmod +x /usr/local/bin/terraform
-        - terraform --version
-        - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
-        - export PATH=$PATH:/usr/local/bin  
-    script:
-      - cd ./repo/terraform
-      - >
-        terraform init 
-        -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
-        -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
-        -backend-config="bucket=${TF_STATE_BUCKET}"
-      - terraform show
-      - terraform apply -auto-approve -var="vm_image_id=ubuntu-2204-lts" -var="git_branch=${CI_COMMIT_BRANCH}"
-      - echo "PUBLIC_IP=$(terraform output -json | jq -r '.public_address.value')" > $CI_PROJECT_DIR/terraform.env
-  needs:
-    - create-auth-and-bucket  
-  artifacts:
-    reports:
-      dotenv: "terraform.env"
-  retry:
-    max: 2
-    when: always
+terraforming:
+  image: alpine:3.18
+  stage: create-machine
+  before_script:
+      - apk add bash curl unzip envsubst unzip jq
+      - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
+      - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
+      - chmod +x /usr/local/bin/terraform
+      - terraform --version
+      - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
+      - export PATH=$PATH:/usr/local/bin  
+  script:
+    - cd ./repo/terraform
+    - >
+      terraform init 
+      -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
+      -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      -backend-config="bucket=${TF_STATE_BUCKET}"
+    - terraform show
+    - terraform apply -auto-approve -var="vm_image_id=ubuntu-2204-lts" -var="git_branch=${CI_COMMIT_BRANCH}"
+    - echo "PUBLIC_IP=$(terraform output -json | jq -r '.public_address.value')" > $CI_PROJECT_DIR/terraform.env
+needs:
+  - create-auth-and-bucket  
+artifacts:
+  reports:
+    dotenv: "terraform.env"
+retry:
+  max: 2
+  when: always
 
 connect-to-machine:
   stage: connect-to-machine
