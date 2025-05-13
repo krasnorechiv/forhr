@@ -9,3 +9,17 @@ variable "network_zone" {
   sensitive = false
   nullable = false
 }
+variable "vm_name_net" {
+  description = "Name for the static IP address"
+  type        = string
+}
+
+variable "vm_name_innet" {
+  description = "Name for the internal network"
+  type        = string
+}
+
+variable "vm_name_subnet" {
+  description = "Name for the internal subnet"
+  type        = string
+}
