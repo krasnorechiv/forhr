@@ -224,4 +224,5 @@ connect-to-machine:
     - ansible-playbook ./repo/ansible/ansible-playbook.yml
       --tags frontend
       -i $(pwd)/repo/ansible/inventory/inventory.yml 
-      -e "registry_image_frontend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
+      -e "registry_image_frontend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}"
+      -e "@repo/ansible/group_vars/all.yml" 
