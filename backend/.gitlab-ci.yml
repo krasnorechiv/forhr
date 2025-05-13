@@ -190,25 +190,19 @@ terraforming:
       - terraform --version
       - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
       - export PATH=$PATH:/usr/local/bin
-      - |
-        if [ "$CI_COMMIT_BRANCH" == "main" ]; then
-          export TF_WORKSPACE="prod"
-        else
-          export TF_WORKSPACE="dev"
-        fi  
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-prod"
         TF_VAR_vm_name_innet: "pelmennaya-prod-network"
         TF_VAR_vm_name_subnet: "pelmennaya-prod-subnet"
-        TF_WORKSPACE: "prod"
+        ENVIRONMENT: "prod"
     - if: '$CI_COMMIT_BRANCH == "develop"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-dev"
         TF_VAR_vm_name_innet: "pelmennaya-dev-network"
         TF_VAR_vm_name_subnet: "pelmennaya-dev-subnet"
-        TF_WORKSPACE: "dev"
+        ENVIRONMENT: "dev"
   script:
     - cd ./repo/terraform
     - >
@@ -216,11 +210,11 @@ terraforming:
       -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
       -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
       -backend-config="bucket=${TF_STATE_BUCKET}"
-      -backend-config="key=terraform/${TF_WORKSPACE}/state"      
-    - terraform workspace select ${TF_WORKSPACE} || terraform workspace new ${TF_WORKSPACE}
+      -backend-config="key=terraform/${ENVIRONMENT}/state"      
+    - terraform workspace select ${ENVIRONMENT} || terraform workspace new ${ENVIRONMENT}
     - terraform show
     - terraform apply -auto-approve
-    - echo "PUBLIC_IP_${TF_WORKSPACE}=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env
+    - echo "PUBLIC_IP_${ENVIRONMENT}=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env
 
   needs:
     - create-auth-and-bucket  
