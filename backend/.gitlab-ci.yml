@@ -221,7 +221,7 @@ connect-to-machine:
     - chmod 644 ~/.ssh/known_hosts
     - export ANSIBLE_CONFIG=$(pwd)/repo/ansible/ansible.cfg
   script:
-    - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!!'"
+    - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!'"
     - envsubst < $(pwd)/repo/ansible/inventory/inventory.yml.tmpl > $(pwd)/repo/ansible/inventory/inventory.yml
     - envsubst < $(pwd)/repo/ansible/group_vars/all.yml.tmpl > $(pwd)/repo/ansible/group_vars/all.yml
     - ansible-playbook ./repo/ansible/ansible-playbook.yml
@@ -230,4 +230,3 @@ connect-to-machine:
       -e "registry_image_backend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
       -e "backend_port=8081"
       -e "@repo/ansible/group_vars/all.yml"
-    - ssh ansible@"$PUBLIC_IP" "docker ps"
