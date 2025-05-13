@@ -1,0 +1,69 @@
+---
+- name: Include color detection
+  include_tasks: detect.yml
+  when: auto_detect_colors | default(true)
+
+- name: Deploy new backend container
+  community.docker.docker_container:
+    name: "{{ backend_container_prefix }}-{{ new_color }}"
+    image: "{{ registry_image_backend }}"
+    state: started
+    networks: []
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:{{ backend_port }}/health"]
+      interval: 5s
+      timeout: 3s
+
+- name: Wait for healthcheck
+  community.docker.docker_container_info:
+    name: "{{ backend_container_prefix }}-{{ new_color }}"
+  register: health
+  until: health.container.State.Health.Status == "healthy"
+  retries: 12
+  delay: 5
+
+- block:
+    - name: Ensure network exists
+      community.docker.docker_network:
+        name: "{{ docker_network }}"
+        state: present
+
+    - name: Connect new container with alias
+      command: >
+        docker network connect
+        --alias {{ backend_active_alias }}
+        {{ docker_network }}
+        {{ backend_container_prefix }}-{{ new_color }}
+      register: connect_new
+      changed_when: "'already connected' not in connect_new.stderr"
+
+    - name: Disconnect old container
+      command: >
+        docker network disconnect
+        {{ docker_network }}
+        {{ backend_container_prefix }}-{{ old_color }}
+      when: old_color != "none"
+      ignore_errors: true
+      register: disconnect_old
+      changed_when: "'is not connected' not in disconnect_old.stderr"
+
+  when: health.container.State.Health.Status == "healthy"
+
+- name: Reload nginx in frontend container
+  community.docker.docker_container_exec:
+    container: "{{ frontend_container_name }}"
+    command: "nginx -s reload"
+  when:
+    - health.container.State.Health.Status == "healthy"
+    - old_color != "none"
+  register: nginx_reload
+  changed_when: "'reloaded' in nginx_reload.stdout"
+
+- name: Remove old container
+  community.docker.docker_container:
+    name: "{{ backend_container_prefix }}-{{ old_color }}"
+    state: absent
+    force_kill: true
+  when:
+    - old_color != "none"
+    - health.container.State.Health.Status == "healthy"

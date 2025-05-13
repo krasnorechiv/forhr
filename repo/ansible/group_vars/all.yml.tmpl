@@ -1,0 +1,9 @@
+ansible_python_interpreter: /usr/bin/python3
+registry_url: "${CI_REGISTRY}"
+registry_user: "${CI_REGISTRY_USER}"
+registry_password: "${CI_REGISTRY_PASSWORD}"
+docker_network: pelmennaya-net
+backend_container_prefix: "pelmennaya-backend"
+backend_active_alias: "pelmennaya-backend-active"
+frontend_container_name: "pelmennaya-frontend"
+app_port: "8088"

@@ -1,9 +1,0 @@
-#cloud-config
-users:
-  - name: ansible
-    groups: sudo
-    shell: /bin/bash
-    sudo: 'ALL=(ALL) NOPASSWD:ALL'
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCgL0EwKPb1Cqbzk+n/Kt7WU6Y+a6YCICf16a0fv3t37sCPy8HJfKcfHK/n6yNGQ8ylwvquz2NvvBvL3Sk6s6Q28cblAnzTY2aWJvRM6kfTADCHZteHvTCIHrb9BA3whcipaPtg5JUFppFHQCnSA7KNaeY1p+dBPXYLvigd9Ys+LiYZzkh0yKdgzRizS8w4VjGUV3PRTW+MpSm4lc+dnJm/C2dYU8KeOFGdwCZevEBd2bVX/XzdfjLKqHx+a8jUmOlv2enNxDmfIJO4lGg7wey8YTnBKC7YFe2dr+qU3HcfdgllexzCiaQmRTN82eymz9HSYHrNo+56rceB0eCPU2yVHQlHteX7jzHsPYzaFCG1EKbnFVv6HojIHoIvatNQQCNdX56yxs4LmSOi8EOFURm/w/5tKGy+HInD11LWBhOTumpvik/H+A0mFpKtyGMUZh5ul/H81KOaMiWbcgwEyJ2Ye7f3miUf3RMUEN+XIXLG94DDhwFUxkwpRPtKOfRSo0E= student@fhmu96a2tvnlaharf7rb
-a
