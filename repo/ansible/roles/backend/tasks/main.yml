@@ -43,7 +43,7 @@
         {{ docker_network }}
         {{ backend_container_prefix }}-{{ old_color }}
       when: old_color != "none"
-      ignore_errors: yes
+      ignore_errors: true
       register: disconnect_old
       changed_when: "'is not connected' not in disconnect_old.stderr"
 
@@ -58,7 +58,7 @@
     - old_color != "none"
   register: nginx_reload
   changed_when: "'reloaded' in nginx_reload.stdout"
-  
+
 - name: Remove old container
   community.docker.docker_container:
     name: "{{ backend_container_prefix }}-{{ old_color }}"

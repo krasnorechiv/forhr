@@ -204,6 +204,9 @@ terraforming:
   artifacts:
     reports:
       dotenv: "terraform.env"
+  retry:
+    max: 2
+    when: always
 
 connect-to-machine:
   stage: connect-to-machine
@@ -230,3 +233,6 @@ connect-to-machine:
       -e "registry_image_backend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}" 
       -e "backend_port=8081"
       -e "@repo/ansible/group_vars/all.yml"
+  retry:
+    max: 2
+    when: always

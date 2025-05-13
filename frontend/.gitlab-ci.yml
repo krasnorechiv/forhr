@@ -15,7 +15,7 @@ variables:
   PATCH: "2"
   TF_VERS: "1.9.6"
   TF_VAR_zone1: "ru-central1-a"
-  TF_VAR_vm_name: "pelmennaya-vm-2"
+  TF_VAR_vm_name: "pelmennaya-vm"
   TF_VAR_ssh_public_keys: "qqq"
   TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
 cache:
@@ -201,6 +201,9 @@ terraforming:
   artifacts:
     reports:
       dotenv: "terraform.env"
+  retry:
+    max: 2
+    when: always  
 
 connect-to-machine:
   stage: connect-to-machine
@@ -225,4 +228,7 @@ connect-to-machine:
       --tags all-check,frontend
       -i $(pwd)/repo/ansible/inventory/inventory.yml 
       -e "registry_image_frontend=${CI_REGISTRY_IMAGE}/${APP_NAME}:${VERSION}"
-      -e "@repo/ansible/group_vars/all.yml" 
+      -e "@repo/ansible/group_vars/all.yml"
+  retry:
+    max: 2
+    when: always
