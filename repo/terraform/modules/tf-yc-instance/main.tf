@@ -14,6 +14,7 @@ resource "yandex_compute_instance" "vm-1" {
     zone = var.vm_zone
     platform_id = var.vm_platf_id
     allow_stopping_for_update = true
+    labels      = var.tags
     
 
     # Конфигурация ресурсов:
@@ -50,7 +51,6 @@ resource "yandex_compute_instance" "vm-1" {
     metadata = {
         user-data = "${file("./modules/tf-yc-instance/cloud-init")}"
         ssh_key = var.ssh_public_key
-        tags = "ssh-key-${sha1(var.ssh_public_key)}"
       }
     
   lifecycle {
