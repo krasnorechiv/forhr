@@ -43,3 +43,9 @@ variable "vm_name" {
   sensitive = true
   nullable = false
 }
+
+variable "git_branch" {
+  description = "Git branch name"
+  type        = string
+  default     = "develop"
+}
