@@ -44,7 +44,6 @@
     old_color: "none"
   when:
     - docker_check.rc == 0
-    - existing_containers is not defined or (
-        "'pelmennaya-backend-green' not in existing_containers.stdout" and
-        "'pelmennaya-backend-blue' not in existing_containers.stdout"
-      )
+    - existing_containers is defined
+    - "'pelmennaya-backend-green' not in existing_containers.stdout"
+    - "'pelmennaya-backend-blue' not in existing_containers.stdout"
