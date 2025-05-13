@@ -1,26 +1,24 @@
----
 - name: Check if Docker is installed
   command: which docker
   register: docker_check
   ignore_errors: yes
   changed_when: false
 
-- name: Set default color for first deployment
+- name: Debug docker_check
+  debug:
+    var: docker_check.rc
+
+- name: Detect existing containers
+  command: docker ps -a --format "{{ '{{' }}.Names{{ '}}' }}"
+  register: existing_containers
+  when: docker_check.rc == 0
+  changed_when: false
+
+- name: Set default color if Docker not installed
   set_fact:
     new_color: "green"
     old_color: "none"
   when: docker_check.rc != 0
-
-- name: Set default color for first deployment or when no containers exist
-  set_fact:
-    new_color: "green"
-    old_color: "none"
-  when: 
-    - docker_check.rc != 0 or (
-        docker_check.rc == 0 and 
-        "'pelmennaya-backend-green' not in existing_containers.stdout" and 
-        "'pelmennaya-backend-blue' not in existing_containers.stdout"
-      )
 
 - name: Set colors for green -> blue switch
   set_fact:
@@ -28,6 +26,7 @@
     old_color: "green"
   when:
     - docker_check.rc == 0
+    - existing_containers is defined
     - "'pelmennaya-backend-green' in existing_containers.stdout"
 
 - name: Set colors for blue -> green switch
@@ -36,4 +35,16 @@
     old_color: "blue"
   when:
     - docker_check.rc == 0
+    - existing_containers is defined
     - "'pelmennaya-backend-blue' in existing_containers.stdout"
+
+- name: Set default color if no containers detected
+  set_fact:
+    new_color: "green"
+    old_color: "none"
+  when:
+    - docker_check.rc == 0
+    - existing_containers is not defined or (
+        "'pelmennaya-backend-green' not in existing_containers.stdout" and
+        "'pelmennaya-backend-blue' not in existing_containers.stdout"
+      )
