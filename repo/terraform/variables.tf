@@ -49,3 +49,18 @@ variable "git_branch" {
   type        = string
   default     = "develop"
 }
+
+variable "vm_name_net" {
+  description = "Name of network"
+  type        = string
+}
+
+variable "vm_name_innet" {
+  description = "Name of internal network"
+  type        = string
+}
+
+variable "vm_name_subnet" {
+  description = "Name of subnet network"
+  type        = string
+}
