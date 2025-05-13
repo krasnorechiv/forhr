@@ -49,6 +49,16 @@
 
   when: health.container.State.Health.Status == "healthy"
 
+- name: Reload nginx in frontend container
+  community.docker.docker_container_exec:
+    container: "{{ frontend_container_name }}"
+    command: "nginx -s reload"
+  when:
+    - health.container.State.Health.Status == "healthy"
+    - old_color != "none"
+  register: nginx_reload
+  changed_when: "'reloaded' in nginx_reload.stdout"
+  
 - name: Remove old container
   community.docker.docker_container:
     name: "{{ backend_container_prefix }}-{{ old_color }}"
