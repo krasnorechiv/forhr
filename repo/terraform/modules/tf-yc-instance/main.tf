@@ -50,7 +50,6 @@ resource "yandex_compute_instance" "vm-1" {
     # или список SSH-ключей для доступа на ВМ
     metadata = {
         user-data = "${file("./modules/tf-yc-instance/cloud-init")}"
-        ssh_key = var.ssh_public_key
       }
     
   lifecycle {

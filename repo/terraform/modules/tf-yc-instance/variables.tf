@@ -88,10 +88,6 @@ variable "vm_nat_ip_address" {
   description = "subnet id of VM"
   type        = string
 }
-variable "ssh_public_key" {
-  type        = string
-}
-
 ######Внутренний ID для подсети######
 variable "vm_internal_subnet_id" {
   description = "ID внутренней подсети для общения между ВМ"
