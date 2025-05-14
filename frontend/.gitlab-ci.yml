@@ -269,5 +269,5 @@ connect-to-machine:
     max: 2
     when: always #иногда раннеры могут подвиснуть и пытаемся ещё раз деплоить
   environment:
-    name: ${ENVIRONMENT}
+    name: $CI_COMMIT_REF_SLUG
     url: http://${PUBLIC_IP}
