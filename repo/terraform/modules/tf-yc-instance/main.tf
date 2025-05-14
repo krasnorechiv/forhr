@@ -8,8 +8,7 @@ resource "yandex_compute_instance" "vm-1" {
     name = var.vm_name
     zone = var.vm_zone
     platform_id = var.vm_platf_id
-    allow_stopping_for_update = true
-    labels      = var.tags
+    labels      = var.tags # лейблы подтягиваются из переменных
     
 
     # Конфигурация ресурсов:
@@ -46,9 +45,5 @@ resource "yandex_compute_instance" "vm-1" {
     metadata = {
         user-data = "${file("./modules/tf-yc-instance/cloud-init")}"
       }
-    
-  lifecycle {
-    create_before_destroy = true  # сначала создаёт новый, потом удаляет старый
-  }
 
 }

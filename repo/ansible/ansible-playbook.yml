@@ -3,19 +3,19 @@
   hosts: 
     - backend
     - frontend
-  tags: all-check
+  tags: all-check  #удобно для вызова из ansible-playbook -i --tags frontend
   roles:
     - preparing
 
 - name: Install backend of Pelmennaya-Store
-  tags: backend
+  tags: backend #удобно для вызова из ansible-playbook -i --tags frontend
   hosts: backend
 
   roles: 
     - backend
 
 - name: Install frontend of Pelmennaya-Store
-  tags: frontend
+  tags: frontend #удобно для вызова из ansible-playbook -i --tags frontend
   hosts: frontend
   roles: 
     - frontend

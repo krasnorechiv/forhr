@@ -3,7 +3,8 @@
   include_tasks: detect.yml
   when: auto_detect_colors | default(true)
 
-- name: Deploy new backend container
+### Деплой бэка ###
+- name: Deploy new backend container of pelmennaya
   community.docker.docker_container:
     name: "{{ backend_container_prefix }}-{{ new_color }}"
     image: "{{ registry_image_backend }}"
@@ -14,6 +15,7 @@
       interval: 5s
       timeout: 3s
 
+### Ждём пока новый контейнер станет healthy ###
 - name: Wait for healthcheck
   community.docker.docker_container_info:
     name: "{{ backend_container_prefix }}-{{ new_color }}"
@@ -22,12 +24,13 @@
   retries: 12
   delay: 5
 
+### 
 - block:
     - name: Ensure network exists
       community.docker.docker_network:
         name: "{{ docker_network }}"
         state: present
-
+### добавляем алиас контейнеру, чтобы для nginxa не было разницы с чем работает ###
     - name: Connect new container with alias
       command: >
         docker network connect
@@ -36,7 +39,7 @@
         {{ backend_container_prefix }}-{{ new_color }}
       register: connect_new
       changed_when: "'already connected' not in connect_new.stderr"
-
+### отключаем старый контейнер ###
     - name: Disconnect old container
       command: >
         docker network disconnect
@@ -49,6 +52,7 @@
 
   when: health.container.State.Health.Status == "healthy"
 
+### сообщаем nginx-у что у нас чето поменялось ( иногда обходится и без этого, но добавил на всякий) ###
 - name: Reload nginx in frontend container
   community.docker.docker_container_exec:
     container: "{{ frontend_container_name }}"
@@ -58,7 +62,7 @@
     - old_color != "none"
   register: nginx_reload
   changed_when: "'reloaded' in nginx_reload.stdout"
-
+### если всё норм и healthy, то удаляем спокойно старый контейнер ###
 - name: Remove old container
   community.docker.docker_container:
     name: "{{ backend_container_prefix }}-{{ old_color }}"

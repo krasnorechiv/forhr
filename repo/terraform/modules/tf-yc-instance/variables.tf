@@ -93,8 +93,9 @@ variable "vm_internal_subnet_id" {
   description = "ID внутренней подсети для общения между ВМ"
   type        = string
 }
+######Теги для ВМ######
 variable "tags" {
-  description = "Tags/Labels to assign to the instance"
+  description = "Теги"
   type        = map(string)
   default     = {}
 }
