@@ -167,6 +167,8 @@ create-auth-and-bucket:
       - terraform --version
       - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
       - export PATH=$PATH:/usr/local/bin
+  rules:
+      - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
   script: 
     - yc config set token ${YC_OATH_ID};
       yc config set folder-id ${TF_VAR_folder_id}
