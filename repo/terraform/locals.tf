@@ -21,8 +21,8 @@ locals {
   }
 
   common_tags = {
-    Environment = local.env_suffix
-    Terraform   = "true"
-    Project     = "pelmennaya"
+    environment = local.env_suffix
+    terraform   = "true"
+    project     = "pelmennaya"
   }
 }
