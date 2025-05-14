@@ -51,8 +51,8 @@ variable "vm_core" {
   type        = number
   default     = 2
   validation {
-     condition     = var.vm_core >= 1 && var.vm_core <= 2 && floor(var.vm_core) == var.vm_core
-     error_message = "From 1C to 2C will be fine"
+     condition     = var.vm_core >= 1 && var.vm_core <= 6 && floor(var.vm_core) == var.vm_core
+     error_message = "From 1C to 6C will be fine"
      }
 }
 
@@ -62,8 +62,8 @@ variable "vm_ram" {
   type        = number
   default     = 2
   validation {
-     condition     = var.vm_ram >= 1 && var.vm_ram <= 2 && floor(var.vm_ram) == var.vm_ram
-     error_message = "From 1G to 2G will be fine"
+     condition     = var.vm_ram >= 1 && var.vm_ram <= 6 && floor(var.vm_ram) == var.vm_ram
+     error_message = "From 1G to 6G will be fine"
       }
 }
 
