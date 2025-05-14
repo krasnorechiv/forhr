@@ -3,6 +3,7 @@
   community.docker.docker_container:
     name: "{{ frontend_container_name }}"
     image: "{{ registry_image_frontend }}"
+    restart_policy: always
     state: started
     networks:
       - name: "{{ docker_network }}"
