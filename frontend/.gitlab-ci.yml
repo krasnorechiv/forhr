@@ -171,7 +171,7 @@ create-auth-and-bucket:
       yc config set folder-id ${TF_VAR_folder_id}
     - envsubst < ./repo/createbucket.sh | bash
   needs:
-    - release-backend-docker-image
+    - release-frontend-docker-image
   artifacts:
     reports:
       dotenv: auth.env
