@@ -28,27 +28,27 @@ if ! yc storage bucket get --name ${TF_STATE_BUCKET} &>/dev/null; then
 else
     echo "Бакет ${TF_STATE_BUCKET} уже существует с правами RW для ${SA_NAME}"
 fi
-###создаём ключи доступа###
-#if [ $(yc iam access-key list --service-account-name $SA_NAME --format json | jq length) -eq 0 ]; then
-#  echo "Creating access keys"
-#  ###делаем ключ###
-#  yc iam access-key create \
-#  --service-account-name $SA_NAME \
-#  --folder-id=b1gpm0guidv16gd8344e \
-#  --format json > cred.json
-#
-#  key_id=$(yc iam access-key list \
-#  --service-account-name terraform-sass \
-#  --folder-id=b1gpm0guidv16gd8344e \
-#  --format json \
-#  | jq -r 'sort_by(.created_at) | last | .key_id')
-#
 
-#  echo "BACK_KEY_ID=$(jq -r '.access_key.key_id' cred.json)" >> auth.env
-#  echo "BACK_KEY_SCRT=$(jq -r '.secret' cred.json)" >> auth.env
-#  rm -rf cred.json
-#else
-#  echo "Секретный ключ уже есть. Забыл ключ? Перевыпусти"
-#  
-#fi
+if ! yc storage bucket get --name ${TF_S3_BUCKET} &>/dev/null; then
+        echo "Создаю новый бакет: ${TF_S3_BUCKET}"
+        yc storage bucket create --name ${TF_S3_BUCKET} \
+          --default-storage-class=standard \
+          --max-size=1073741824 \
+          --public-read=true \
+          --public-list=true &>/dev/null
+            yc storage bucket update --name ${TF_S3_BUCKET} \
+            --grants="
+            grantee-id=$(yc iam service-account get --name ${SA_NAME} --format json | jq -r '.id'),
+            grant-type=grant-type-account,
+            permission=permission-read" \
+            --grants="
+            grantee-id=$(yc iam service-account get --name ${SA_NAME} --format json | jq -r '.id'),
+            grant-type=grant-type-account,
+            permission=permission-write"
+        echo "Создан бакет ${TF_S3_BUCKET} с правами RW для ${SA_NAME}" 
+else
+    echo "Бакет ${TF_S3_BUCKET} уже существует с правами RW для ${SA_NAME}"
+fi
+
+
 echo "TF_VAR_token1=$(yc iam create-token)" >> auth.env
