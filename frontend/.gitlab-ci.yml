@@ -10,25 +10,29 @@ stages:
 variables:
   NODE_VERSION: "${NODE_VERSION}"
   APP_NAME: pelmennaya-frontend
+  ###Глобальная версия фронтенда###
   MAJOR: "1"
   MINOR: "0"
   PATCH: "4"
-  TF_VERS: "1.9.6"
-  TF_VAR_zone1: "ru-central1-a"
-  TF_VAR_vm_name: "pelmennaya-vm"
-  TF_VAR_ssh_public_keys: "qqq"
-  TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc"
+
+  TF_VERS: "1.9.6" #версия терраформа
+  TF_VAR_zone1: "ru-central1-a" # зона доступности
+  TF_VAR_vm_name: "pelmennaya-vm" #имя вм (добавляется префикс -dev -prod)
+  TF_CLI_CONFIG_FILE: "${CI_PROJECT_DIR}/repo/terraform/.terraformrc" #настройка провайдера - там яндекс прокси
 cache:
   paths:
-    - frontend/dist/ # передаю кеш в другие задачи
+    - frontend/dist/ # передаю кеш в другие задачи (в загрузку артефакта)
 
+###Генерируем версионирование в зависимости от веток - надо обдумать над облегчением конструкции.
+###Пока используется такая конструкция из-за git-flow
+###C Переходом на gitlab-ci flow можно придумать другое
 generate-version:
   stage: prepare
   script:
     - |
      if [[ -n "$CI_COMMIT_TAG" ]]; then
-        # Релизная версия из тега (v1.2.3 → 1.2.3)
-        VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^r//')  # Удаляем 'v' при наличии
+        # Релизная версия из тега (r1.2.3 -> 1.2.3)
+        VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^r//')  # Удаляю 'r' при наличии
         DIR_BRANCH=release
       elif [[ "$CI_COMMIT_BRANCH" == "main" ]]; then
       # main без тега (например, ручной запуск пайплайна)
@@ -60,7 +64,7 @@ generate-version:
     reports:
       dotenv: build.env
 
-
+###Сборка фронтенда
 build-frontend-code-job:
   stage: build
   image:
@@ -76,6 +80,7 @@ build-frontend-code-job:
   needs:
     - generate-version      
 
+###Проверяем сонаром - украдено с офф. сайта
 sonarqube-check-frontend:
   stage: test
   image:
@@ -103,6 +108,7 @@ sonarqube-check-frontend:
   needs:
     - build-frontend-code-job  
 
+###Отправка фронта в Nexus
 upload-binary-pelmennaya:
   stage: release-binary
   script:
@@ -117,6 +123,7 @@ upload-binary-pelmennaya:
     - job: generate-version
       artifacts: true
 
+###Собираем docker-image
 build-docker-frontend-code-job:
   stage: docker-gen-image
   image:
@@ -136,7 +143,7 @@ build-docker-frontend-code-job:
     - upload-binary-pelmennaya
     - generate-version
 
-
+###Тэгаем образ в репозитории
 release-frontend-docker-image:
   stage: docker-gen-image
   variables:
@@ -153,11 +160,14 @@ release-frontend-docker-image:
     - build-docker-frontend-code-job
     - generate-version
 
+###Инфра модифицируется только для main/develop веток###
+###Генерим токен для последующих задач и проверяем 
+###наличие баккетОВ, если что создаём и нарезаем права (bash)
 create-auth-and-bucket:
   image: alpine:3.18
   stage: create-auth
   before_script:
-      - apk add bash curl unzip envsubst unzip jq
+      - apk add bash curl unzip envsubst unzip jq  #предварительные ласки
       - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
       - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
       - chmod +x /usr/local/bin/terraform
@@ -178,10 +188,11 @@ create-auth-and-bucket:
     expire_in: 30 minutes
     access: 'none' #через вебку не будет виден токен. Передача только между пайплайнами
 
+###Создание инфры через terraform
 terraforming:
   image: alpine:3.18
   stage: create-machine
-  before_script:
+  before_script: #предварительные ласки
       - apk add bash curl unzip envsubst unzip jq
       - curl -LO "https://hashicorp-releases.yandexcloud.net/terraform/${TF_VERS}/terraform_${TF_VERS}_linux_amd64.zip"
       - unzip terraform_${TF_VERS}_linux_amd64.zip -d /usr/local/bin/
@@ -189,7 +200,7 @@ terraforming:
       - terraform --version
       - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local -n
       - export PATH=$PATH:/usr/local/bin
-  rules:
+  rules:  # инфра начнёт создаваться только если пайплайн запущен либо из main/develop ветки и каждая ветка имеет свои переменные
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-prod"
@@ -208,30 +219,35 @@ terraforming:
     - cd ./repo/terraform
     - >
       terraform init 
-      -backend-config="access_key=${AWS_ACCESS_KEY_ID}"
+      -backend-config="access_key=${AWS_ACCESS_KEY_ID}" 
       -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
       -backend-config="bucket=${TF_STATE_BUCKET}"
       -backend-config="key=terraform/${ENVIRONMENT}/state"      
-    - terraform workspace select ${ENVIRONMENT} || terraform workspace new ${ENVIRONMENT}
+    - terraform workspace select ${ENVIRONMENT} || terraform workspace new ${ENVIRONMENT} #в зависимости от воркспейса будет развёрнута вм
     - terraform show
     - terraform apply -auto-approve -var="vm_image_id=ubuntu-2204-lts"
-    - echo "PUBLIC_IP=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env
+    - echo "PUBLIC_IP=$(terraform output -raw vm_public_ip)" > $CI_PROJECT_DIR/terraform.env # передаём инфу о ip адресах ансимблЮ
   needs:
     - create-auth-and-bucket  
   artifacts:
     reports:
       dotenv: "terraform.env"
+    expire_in: 30 minutes
+    access: 'none' #через вебку не будет виден токен. Передача только между пайплайнами 
   retry:
     max: 2
     when: always
 
+###Подключение через ansible и установка пельменной
 connect-to-machine:
   stage: connect-to-machine
   image: alpine:3.18
+  rules: # выполнять только на двух ветках
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
   needs: 
     - terraforming
     - generate-version
-  before_script:
+  before_script: # предвартельные ласки
     - apk add --no-cache openssh-client ansible envsubst
     - eval $(ssh-agent -s)  
     - echo "$SSH_ID_RSA" | base64 -d |  tr -d '\r' | ssh-add -  
@@ -241,9 +257,9 @@ connect-to-machine:
     - chmod 644 ~/.ssh/known_hosts
     - export ANSIBLE_CONFIG=$(pwd)/repo/ansible/ansible.cfg
   script:
-    - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!!'"
-    - envsubst < $(pwd)/repo/ansible/inventory/inventory.yml.tmpl > $(pwd)/repo/ansible/inventory/inventory.yml
-    - envsubst < $(pwd)/repo/ansible/group_vars/all.yml.tmpl > $(pwd)/repo/ansible/group_vars/all.yml
+    - ssh ansible@"$PUBLIC_IP" "echo 'Подключение успешно!!'" # для проверки
+    - envsubst < $(pwd)/repo/ansible/inventory/inventory.yml.tmpl > $(pwd)/repo/ansible/inventory/inventory.yml # динамический инвентарь
+    - envsubst < $(pwd)/repo/ansible/group_vars/all.yml.tmpl > $(pwd)/repo/ansible/group_vars/all.yml # динамические переменные
     - ansible-playbook ./repo/ansible/ansible-playbook.yml
       --tags all-check,frontend
       -i $(pwd)/repo/ansible/inventory/inventory.yml 
@@ -251,4 +267,7 @@ connect-to-machine:
       -e "@repo/ansible/group_vars/all.yml"
   retry:
     max: 2
-    when: always
+    when: always #иногда раннеры могут подвиснуть и пытаемся ещё раз деплоить
+  environment:
+    name: ${ENVIRONMENT}
+    url: http://${PUBLIC_IP}

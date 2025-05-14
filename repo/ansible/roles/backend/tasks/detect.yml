@@ -1,26 +1,18 @@
-- name: Check if Docker is installed
+- name: check install docker
   command: which docker
   register: docker_check
   ignore_errors: true
   changed_when: false
 
-- name: Debug docker_check
-  debug:
-    var: docker_check.rc
-
+### проверяем наличие контейнеров и записываем в переменную existing_containers ###
 - name: Detect existing containers
   command: docker ps -a --format "{{ '{{' }}.Names{{ '}}' }}"
   register: existing_containers
   when: docker_check.rc == 0
   changed_when: false
 
-- name: Set default color if Docker not installed
-  set_fact:
-    new_color: "green"
-    old_color: "none"
-  when: docker_check.rc != 0
-
-- name: Set colors for green -> blue switch
+### Если есть контейнер green, то переменная будет blue ###
+- name: Set colors for green to blue
   set_fact:
     new_color: "blue"
     old_color: "green"
@@ -29,6 +21,7 @@
     - existing_containers is defined
     - "'pelmennaya-backend-green' in existing_containers.stdout"
 
+### Если есть контейнер blue, то переменная будет green ###
 - name: Set colors for blue -> green switch
   set_fact:
     new_color: "green"
@@ -37,7 +30,7 @@
     - docker_check.rc == 0
     - existing_containers is defined
     - "'pelmennaya-backend-blue' in existing_containers.stdout"
-
+### Если вообще контейнеров нет - то устанавливаем от балды ###
 - name: Set default color if no containers detected
   set_fact:
     new_color: "green"
