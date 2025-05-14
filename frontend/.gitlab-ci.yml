@@ -228,6 +228,8 @@ terraforming:
 connect-to-machine:
   stage: connect-to-machine
   image: alpine:3.18
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
   needs: 
     - terraforming
     - generate-version
