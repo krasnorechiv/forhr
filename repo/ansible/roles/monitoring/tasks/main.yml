@@ -37,7 +37,7 @@
     state: started
     restart_policy: unless-stopped
     networks:
-      - name: {{ docker_network }}
+      - name: "{{ docker_network }}"
     volumes:
       - "/proc:/host/proc:ro"
       - "/sys:/host/sys:ro"
@@ -56,7 +56,7 @@
     image: "prom/prometheus:{{ prometheus_version }}"
     restart_policy: unless-stopped
     networks:
-      - name: {{ docker_network }}
+      - name: "{{ docker_network }}"
     volumes:
       - "/opt/monitoring/prometheus:/etc/prometheus"
       - "prometheus_data:/prometheus"
@@ -72,7 +72,7 @@
     image: "grafana/grafana:{{ grafana_version }}"
     restart_policy: unless-stopped
     networks:
-      - name: {{ docker_network }}
+      - name: "{{ docker_network }}"
     ports:
       - "{{ grafana_port }}:3000"
     volumes:
