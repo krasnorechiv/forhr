@@ -8,7 +8,7 @@ node_exporter_version: "latest"
 prometheus_port: 9090
 grafana_port: 3000
 node_exporter_port: 9100
-app_exporter_port: 8081  # Порт вашего Go-приложения
+app_exporter_port: 8081  # 
 
 # Учетные данные Grafana
 grafana_admin_user: "admin"
@@ -17,4 +17,4 @@ grafana_admin_password: "securepassword"
 # Целевые хосты для мониторинга
 monitored_hosts:
   - "localhost:{{ node_exporter_port }}"
-  - "pelmennaya-backend-active:{{ app_exporter_port }}"  # Замените на hostname вашего Go-приложения
+  - "pelmennaya-backend-active:{{ app_exporter_port }}" 
