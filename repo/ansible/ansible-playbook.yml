@@ -3,12 +3,20 @@
   hosts: 
     - backend
     - frontend
-  tags: all-check  #удобно для вызова из ansible-playbook -i --tags frontend
+  tags: all-check  #удобно для вызова из ansible-playbook -i --tags all-check
   roles:
     - preparing
 
+- name: Install\Upgrade Prometheus\Grafana
+  hosts: 
+    - backend
+    - frontend
+  tags: monitoring  #удобно для вызова из ansible-playbook -i --tags monitoring
+  roles:
+    - monitoring
+
 - name: Install backend of Pelmennaya-Store
-  tags: backend #удобно для вызова из ansible-playbook -i --tags frontend
+  tags: backend #удобно для вызова из ansible-playbook -i --tags backend
   hosts: backend
 
   roles: 
