@@ -25,6 +25,7 @@
     dest: "/opt/monitoring/grafana/provisioning/{{ item.dir }}/{{ item.file }}"
   loop:
     - { dir: "dashboards", file: "pelmennaya.json" }
+    - { dir: "dashboards", file: "dashboards.yml" }
     - { dir: "datasources", file: "prometheus.yml" }
   become: true
 
