@@ -71,7 +71,7 @@ variable "vm_ram" {
 variable "vm_schedule" {
   description = "Scheduling Policy"
   type        = bool
-  default     = true
+  default     = false
 }
 ######Прерываемая######
 variable "vm_subnet_id" {

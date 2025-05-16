@@ -16,7 +16,7 @@ module "yandex_cloud_vm" {
   vm_name               = var.vm_name
   vm_core               = local.vm_settings[var.git_branch].vm_core
   vm_ram                = local.vm_settings[var.git_branch].vm_ram
-  vm_schedule           = true
+  vm_schedule           = false
   vm_internal_subnet_id = module.yandex_cloud_network.internal_subnet_id
   vm_subnet_id          = module.yandex_cloud_network.internal_subnet_id
   vm_nat_ip_address     = module.yandex_cloud_network.static_ip_address
