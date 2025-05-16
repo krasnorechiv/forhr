@@ -1,53 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -67,10 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [],
   "panels": [
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 8,
@@ -92,6 +46,10 @@
       "type": "text"
     },
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 6,
@@ -113,6 +71,10 @@
       "type": "text"
     },
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 8,
@@ -215,15 +177,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "rate(orders_count[5m])",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Заказы за 5 минут",
@@ -311,15 +273,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "orders_count",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Кол-во заказов пельменей",
@@ -407,15 +369,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "requests_count",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Кол-во HTTP запросов (чек дудос)",
@@ -496,6 +458,10 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "up{instance=\"pelmennaya-backend-active:8081\"}",
@@ -504,11 +470,7 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "useBackend": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "useBackend": false
         }
       ],
       "title": "Бэкэнд Пельменной",
@@ -596,15 +558,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum(rate(response_timing_ms_bucket{handler=\"/products/\"}[5m])) by (le))",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "99 перцентиль для /products",
@@ -692,15 +654,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum(rate(response_timing_ms_bucket{handler=\"/categories/\"}[5m])) by (le))",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "99 перцентиль для /categories",
@@ -783,16 +745,16 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "exemplar": false,
           "expr": "100 - (avg by(instance, cpu) (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
           "legendFormat": "{{label_name}}",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "New panel",
@@ -848,17 +810,18 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "(\n  (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) \n  / \n  node_memory_MemTotal_bytes\n) * 100",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
+      "title": "",
       "type": "gauge"
     },
     {
@@ -912,17 +875,18 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "(\n  (node_memory_SwapTotal_bytes - node_memory_SwapFree_bytes)\n  /\n  node_memory_SwapTotal_bytes\n) * 100",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
+      "title": "",
       "type": "gauge"
     },
     {
@@ -1007,15 +971,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "sum(rate(response_timing_ms_sum[5m])) by (handler) / sum(rate(response_timing_ms_count[5m])) by (handler)",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Среднее время по всем API",
@@ -1128,15 +1092,15 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "rate(node_network_receive_bytes_total{device!~\"lo|bond[0-9]|cbr[0-9]|veth.*\"}[1m]) / 1024",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Входящий трафик (КБ\\сек)",
@@ -1224,21 +1188,22 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "editorMode": "code",
           "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|bond[0-9]|cbr[0-9]|veth.*\"}[1m]) / 1024",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "refId": "A"
         }
       ],
       "title": "Исходящий трафик (КБ\\сек)",
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -1252,6 +1217,5 @@
   "timezone": "browser",
   "title": "Дашборд Пельменной",
   "uid": "0c7a69ab-4a85-40c3-a51b-c4bacf2f8052",
-  "version": 22,
-  "weekStart": ""
+  "version": 22
 }
