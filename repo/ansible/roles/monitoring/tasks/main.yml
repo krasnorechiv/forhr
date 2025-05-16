@@ -65,6 +65,17 @@
       "--storage.tsdb.path=/prometheus"
     ]
 
+- name: Fix dashboard datasource references
+  ansible.builtin.command: >
+    jq 'walk(
+      if type == "object" and .datasource? == "${DS_PROMETHEUS}"
+      then .datasource = {"type":"prometheus","uid":"prometheus"}
+      else . end
+    )' /opt/monitoring/grafana/provisioning/dashboards/pelmennaya.json > /tmp/fixed.json &&
+    mv /tmp/fixed.json /opt/monitoring/grafana/provisioning/dashboards/pelmennaya.json
+  args:
+    creates: /opt/monitoring/grafana/provisioning/dashboards/pelmennaya.json
+    
 # Деплоим графану
 - name: Deploy Grafana
   community.docker.docker_container:
