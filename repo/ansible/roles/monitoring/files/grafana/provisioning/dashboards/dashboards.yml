@@ -10,3 +10,6 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards
       foldersFromFilesStructure: false
+    jsonData:
+      # Явно указываем имя переменной, которую будет использовать дашборд
+      datasourceName: "Prometheus"
