@@ -11,9 +11,6 @@ node_exporter_port: 9100
 app_exporter_port: 8081  # 
 
 # Учетные данные Grafana
-grafana_admin_user: "admin"
-grafana_admin_password: "securepassword"
-
 # Целевые хосты для мониторинга
 monitored_hosts:
   - "localhost:{{ node_exporter_port }}"
