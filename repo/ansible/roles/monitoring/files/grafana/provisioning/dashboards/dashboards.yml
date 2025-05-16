@@ -10,7 +10,3 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards
       foldersFromFilesStructure: false
-      # Явное указание файлов:
-      dashboards:
-        - name: 'pelmennaya'
-          path: /etc/grafana/provisioning/dashboards/pelmennaya.json
