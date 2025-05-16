@@ -75,7 +75,7 @@
     mv /tmp/fixed.json /opt/monitoring/grafana/provisioning/dashboards/pelmennaya.json
   args:
     creates: /opt/monitoring/grafana/provisioning/dashboards/pelmennaya.json
-    
+
 # Деплоим графану
 - name: Deploy Grafana
   community.docker.docker_container:
@@ -96,3 +96,5 @@
       GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
       GF_USERS_DEFAULT_THEME: "light"
       GF_DEFAULT_INSTANCE_NAME: "Grafana-Pelmennaya"  # Добавьте это
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini  # Добавьте это
+      GF_LOG_LEVEL: "debug"  # Включить логи для диагностики
