@@ -7,6 +7,7 @@ data "yandex_compute_image" "my_image" {
 resource "yandex_compute_instance" "vm-1" {
     name = var.vm_name
     zone = var.vm_zone
+    allow_stopping_for_update = true
     platform_id = var.vm_platf_id
     labels      = var.tags # лейблы подтягиваются из переменных
     
