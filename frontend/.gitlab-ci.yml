@@ -12,8 +12,8 @@ variables:
   APP_NAME: pelmennaya-frontend
   ###Глобальная версия фронтенда###
   MAJOR: "1"
-  MINOR: "0"
-  PATCH: "4"
+  MINOR: "1"
+  PATCH: "0"
 
   TF_VERS: "1.9.6" #версия терраформа
   TF_VAR_zone1: "ru-central1-a" # зона доступности

@@ -13,8 +13,8 @@ variables:
   APP_NAME: pelmennaya-backend
 ###Глобальная версия бэкенда###
   MAJOR: "1"
-  MINOR: "0"
-  PATCH: "7"
+  MINOR: "1"
+  PATCH: "0"
   GOPATH: "$CI_PROJECT_DIR/.go"
   TF_VERS: "1.9.6" #версия терраформа
   TF_VAR_zone1: "ru-central1-a" # зона доступности
