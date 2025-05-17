@@ -209,13 +209,15 @@ terraforming:
         TF_VAR_vm_name_innet: "pelmennaya-prod-network"
         TF_VAR_vm_name_subnet: "pelmennaya-prod-subnet"
         ENVIRONMENT: "prod"
-        TF_VAR_vm_name: "pelmennaya-vm-prod" 
+        TF_VAR_vm_name: "pelmennaya-vm-prod"
+        TF_VAR_git_branch: "main" 
     - if: '$CI_COMMIT_BRANCH == "develop"'
       variables:
         TF_VAR_vm_name_net: "static-ip-pelmennaya-dev"
         TF_VAR_vm_name_innet: "pelmennaya-dev-network"
         TF_VAR_vm_name_subnet: "pelmennaya-dev-subnet"
-        TF_VAR_vm_name: "pelmennaya-vm-dev" 
+        TF_VAR_vm_name: "pelmennaya-vm-dev"
+        TF_VAR_git_branch: "develop" 
         ENVIRONMENT: "dev"
   script:
     - cd ./repo/terraform
