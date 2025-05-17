@@ -9,6 +9,7 @@
     name: "{{ backend_container_prefix }}-{{ new_color }}"
     image: "{{ registry_image_backend }}"
     state: started
+    restart_policy: always
     networks: []
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:{{ backend_port }}/health"]
